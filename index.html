@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CoBe: Counterfactual Reasoning Benchmark</title>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+</head>
+
+<body>
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+
+          <!-- Title -->
+          <h1 class="title is-1">CoBe: Counterfactual Reasoning Benchmark</h1>
+
+          <!-- Links -->
+          <div class="column has-text-centered" style="margin-top: 20px;">
+            <div class="publication-links">
+
+              <!-- Code -->
+              <span class="link-block">
+                <a href="https://github.com/cobe-benchmark/counterfactual-reasoning-benchmark"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                </a>
+              </span>
+
+              <!-- Dataset -->
+              <span class="link-block">
+                <a href="https://huggingface.co/datasets/cobe-team/counterfactual-reasoning-benchmark"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="far fa-images"></i>
+                  </span>
+                  <span>Dataset</span>
+                </a>
+              </span>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Abstract Section -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+
+        <h2 class="title is-3">Abstract</h2>
+
+        <div class="content has-text-justified">
+          <p>
+            Counterfactual text generation — the ability to edit a text by incorporating a hypothetical change 
+            in the scenario being described — is an important skill in domains like medicine or law or industry 
+            applications. This task requires causal understanding of the underlying scenario in order to reason 
+            about the downstream effects of the imagined intervention, following the notation of Judea Pearl. 
+            By contrast, the task of coherent alternative text generation relies on associational reasoning. 
+            Given a text and an altered condition, it generates similar text that is correlated with the alternative 
+            condition in the training corpus. Despite the safety-critical requirement of counterfactual reasoning 
+            skills, prior benchmarks do not clearly distinguish between these two very different modes of reasoning. 
+          </p>
+          <p>
+            We introduce <b>CoBe (Counterfactual Benchmark)</b>: a new testbed designed to assess the native ability 
+            of language models to perform counterfactual edits to a given text. Our dataset consists of 2405 test 
+            questions, each testing counterfactual reasoning across a variety of domains in science, human behavior, 
+            and common-sense scenarios. We test a suite of open and closed models on our benchmark, with frontier 
+            models achieving scores of 50%. Our benchmark offers an important testbed for developing models with 
+            this native capability in natural language, without requiring prompt engineering pipelines.
+          </p>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="content has-text-centered">
+      <p>
+        Website template adapted from Nerfies.
+      </p>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
