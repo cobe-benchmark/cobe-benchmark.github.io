@@ -1,0 +1,224 @@
+.category-example-panel {
+  margin-top: 1.25rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.category-example-panel[hidden] {
+  display: none !important;
+}
+
+.category-example-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #eee;
+  background: #fafafa;
+}
+
+.category-example-title {
+  font-family: 'Google Sans', 'Noto Sans', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #363636;
+  margin: 0;
+}
+
+.category-example-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.category-example-counter {
+  font-family: 'Google Sans', 'Noto Sans', sans-serif;
+  font-size: 0.8rem;
+  color: #6b7280;
+  min-width: 2.5rem;
+  text-align: center;
+}
+
+.category-example-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #fff;
+  color: #374151;
+  cursor: pointer;
+  transition: background 0.12s ease, border-color 0.12s ease;
+}
+
+.category-example-nav-btn:hover {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+.category-example-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  padding: 1rem;
+}
+
+.example-box {
+  border-radius: 10px;
+  padding: 0.75rem 0.9rem;
+  font-family: 'Google Sans', 'Noto Sans', sans-serif;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  color: #1f2937;
+}
+
+.example-box-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  margin-bottom: 0.4rem;
+  opacity: 0.85;
+}
+
+.example-box--scenario {
+  background: #dbeafe;
+  border: 1px solid #bfdbfe;
+}
+
+.example-box--scenario .example-box-label {
+  color: #1e40af;
+}
+
+.example-box--query {
+  background: #ede9fe;
+  border: 1px solid #ddd6fe;
+}
+
+.example-box--query .example-box-label {
+  color: #5b21b6;
+}
+
+.example-box--output {
+  position: relative;
+  background: #ffedd5;
+  border: 1px solid #fed7aa;
+}
+
+.example-verdict-icon-slot {
+  position: absolute;
+  top: 0.55rem;
+  right: 0.65rem;
+  line-height: 0;
+  pointer-events: none;
+}
+
+.example-verdict-icon svg {
+  display: block;
+  width: 26px;
+  height: 26px;
+}
+
+.example-verdict-icon--correct {
+  color: #16a34a;
+}
+
+.example-verdict-icon--wrong {
+  color: #dc2626;
+}
+
+.example-box--output .example-box-label {
+  color: #9a3412;
+  padding-right: 2rem;
+}
+
+.example-box--output.is-correct {
+  background: #dcfce7;
+  border-color: #86efac;
+}
+
+.example-box--output.is-wrong {
+  background: #fee2e2;
+  border-color: #fca5a5;
+}
+
+.example-box--output.is-unknown {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+}
+
+.example-box--gold {
+  background: #d1fae5;
+  border: 1px solid #a7f3d0;
+}
+
+.example-box--gold .example-box-label {
+  color: #065f46;
+}
+
+.example-box--criteria {
+  background: #fef3c7;
+  border: 1px solid #fde68a;
+}
+
+.example-box--criteria .example-box-label {
+  color: #92400e;
+}
+
+.example-box-text {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.example-model-toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-bottom: 0.55rem;
+}
+
+.example-model-toggle {
+  font-family: 'Google Sans', 'Noto Sans', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 500;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid #fdba74;
+  background: #fff;
+  color: #9a3412;
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+}
+
+.example-model-toggle:hover {
+  background: #fff7ed;
+}
+
+.example-model-toggle.is-active {
+  background: #ea580c;
+  border-color: #ea580c;
+  color: #fff;
+}
+
+.example-criteria-list {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+.example-criteria-list li {
+  margin-bottom: 0.25rem;
+}
+
+.example-criteria-list li:last-child {
+  margin-bottom: 0;
+}
+
+.results-chart-wrap .category-label-hit {
+  cursor: pointer;
+}

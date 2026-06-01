@@ -1,0 +1,965 @@
+{
+  "generated_at": "2026-06-01T08:38:49.456474+00:00",
+  "source": {
+    "eval_results_dir": "eval-results",
+    "coreset_properties": "eval-results/coreset_properties.xlsx",
+    "variation_domain_categories": "eval-results/variation_domain_categories.json"
+  },
+  "models": [
+    "claude",
+    "gemini",
+    "gemma-27b",
+    "gpt",
+    "llama3-70b",
+    "llama3-8b",
+    "mistral-7b",
+    "phi4",
+    "qwen-7b"
+  ],
+  "domains": [
+    "Health and Medicine",
+    "Engineering",
+    "History, Geography and Agriculture",
+    "Economics and Finance",
+    "Arts, Music and Entertainment",
+    "Science and Technology",
+    "Human Activities and Behavior"
+  ],
+  "graph_types": [
+    "Chain-like",
+    "Collider-like",
+    "Correlated",
+    "Diamond-like",
+    "Fork-like",
+    "Hydrid"
+  ],
+  "notes": {
+    "accuracy": "correct / (correct + wrong); unknown outcomes excluded from denominator",
+    "query_indices": [
+      2,
+      5,
+      7
+    ],
+    "domain_field": "domain_category from variation_domain_categories.json (per variation)",
+    "graph_field": "Graph column from coreset_properties.xlsx (per coreset)"
+  },
+  "overall": {
+    "claude": {
+      "correct": 3611,
+      "wrong": 3278,
+      "unknown": 236,
+      "total": 7125,
+      "accuracy": 0.5241689650166933
+    },
+    "gemini": {
+      "correct": 3714,
+      "wrong": 3201,
+      "unknown": 210,
+      "total": 7125,
+      "accuracy": 0.5370932754880694
+    },
+    "gemma-27b": {
+      "correct": 3271,
+      "wrong": 3476,
+      "unknown": 378,
+      "total": 7125,
+      "accuracy": 0.4848080628427449
+    },
+    "gpt": {
+      "correct": 3831,
+      "wrong": 3047,
+      "unknown": 247,
+      "total": 7125,
+      "accuracy": 0.556993312009305
+    },
+    "llama3-70b": {
+      "correct": 2991,
+      "wrong": 3558,
+      "unknown": 576,
+      "total": 7125,
+      "accuracy": 0.456710948236372
+    },
+    "llama3-8b": {
+      "correct": 2247,
+      "wrong": 4451,
+      "unknown": 427,
+      "total": 7125,
+      "accuracy": 0.3354732756046581
+    },
+    "mistral-7b": {
+      "correct": 2280,
+      "wrong": 4412,
+      "unknown": 433,
+      "total": 7125,
+      "accuracy": 0.3407053197848177
+    },
+    "phi4": {
+      "correct": 2954,
+      "wrong": 3772,
+      "unknown": 399,
+      "total": 7125,
+      "accuracy": 0.4391911983348201
+    },
+    "qwen-7b": {
+      "correct": 2440,
+      "wrong": 4281,
+      "unknown": 404,
+      "total": 7125,
+      "accuracy": 0.3630412141050439
+    }
+  },
+  "by_domain": {
+    "Health and Medicine": {
+      "claude": {
+        "correct": 222,
+        "wrong": 207,
+        "unknown": 39,
+        "total": 468,
+        "accuracy": 0.5174825174825175
+      },
+      "gemini": {
+        "correct": 213,
+        "wrong": 215,
+        "unknown": 40,
+        "total": 468,
+        "accuracy": 0.4976635514018692
+      },
+      "gemma-27b": {
+        "correct": 169,
+        "wrong": 261,
+        "unknown": 38,
+        "total": 468,
+        "accuracy": 0.3930232558139535
+      },
+      "gpt": {
+        "correct": 227,
+        "wrong": 207,
+        "unknown": 34,
+        "total": 468,
+        "accuracy": 0.5230414746543779
+      },
+      "llama3-70b": {
+        "correct": 161,
+        "wrong": 246,
+        "unknown": 61,
+        "total": 468,
+        "accuracy": 0.3955773955773956
+      },
+      "llama3-8b": {
+        "correct": 124,
+        "wrong": 292,
+        "unknown": 52,
+        "total": 468,
+        "accuracy": 0.2980769230769231
+      },
+      "mistral-7b": {
+        "correct": 134,
+        "wrong": 269,
+        "unknown": 65,
+        "total": 468,
+        "accuracy": 0.3325062034739454
+      },
+      "phi4": {
+        "correct": 156,
+        "wrong": 257,
+        "unknown": 55,
+        "total": 468,
+        "accuracy": 0.37772397094430993
+      },
+      "qwen-7b": {
+        "correct": 129,
+        "wrong": 287,
+        "unknown": 52,
+        "total": 468,
+        "accuracy": 0.31009615384615385
+      }
+    },
+    "Engineering": {
+      "claude": {
+        "correct": 436,
+        "wrong": 413,
+        "unknown": 24,
+        "total": 873,
+        "accuracy": 0.5135453474676089
+      },
+      "gemini": {
+        "correct": 443,
+        "wrong": 417,
+        "unknown": 13,
+        "total": 873,
+        "accuracy": 0.5151162790697674
+      },
+      "gemma-27b": {
+        "correct": 428,
+        "wrong": 414,
+        "unknown": 31,
+        "total": 873,
+        "accuracy": 0.5083135391923991
+      },
+      "gpt": {
+        "correct": 487,
+        "wrong": 370,
+        "unknown": 16,
+        "total": 873,
+        "accuracy": 0.5682613768961493
+      },
+      "llama3-70b": {
+        "correct": 354,
+        "wrong": 458,
+        "unknown": 61,
+        "total": 873,
+        "accuracy": 0.43596059113300495
+      },
+      "llama3-8b": {
+        "correct": 289,
+        "wrong": 541,
+        "unknown": 43,
+        "total": 873,
+        "accuracy": 0.3481927710843373
+      },
+      "mistral-7b": {
+        "correct": 291,
+        "wrong": 543,
+        "unknown": 39,
+        "total": 873,
+        "accuracy": 0.3489208633093525
+      },
+      "phi4": {
+        "correct": 375,
+        "wrong": 462,
+        "unknown": 36,
+        "total": 873,
+        "accuracy": 0.44802867383512546
+      },
+      "qwen-7b": {
+        "correct": 305,
+        "wrong": 537,
+        "unknown": 31,
+        "total": 873,
+        "accuracy": 0.36223277909738716
+      }
+    },
+    "History, Geography and Agriculture": {
+      "claude": {
+        "correct": 254,
+        "wrong": 219,
+        "unknown": 19,
+        "total": 492,
+        "accuracy": 0.5369978858350951
+      },
+      "gemini": {
+        "correct": 276,
+        "wrong": 204,
+        "unknown": 12,
+        "total": 492,
+        "accuracy": 0.575
+      },
+      "gemma-27b": {
+        "correct": 241,
+        "wrong": 218,
+        "unknown": 33,
+        "total": 492,
+        "accuracy": 0.5250544662309368
+      },
+      "gpt": {
+        "correct": 264,
+        "wrong": 208,
+        "unknown": 20,
+        "total": 492,
+        "accuracy": 0.559322033898305
+      },
+      "llama3-70b": {
+        "correct": 206,
+        "wrong": 231,
+        "unknown": 55,
+        "total": 492,
+        "accuracy": 0.47139588100686497
+      },
+      "llama3-8b": {
+        "correct": 136,
+        "wrong": 300,
+        "unknown": 56,
+        "total": 492,
+        "accuracy": 0.3119266055045872
+      },
+      "mistral-7b": {
+        "correct": 152,
+        "wrong": 282,
+        "unknown": 58,
+        "total": 492,
+        "accuracy": 0.35023041474654376
+      },
+      "phi4": {
+        "correct": 194,
+        "wrong": 252,
+        "unknown": 46,
+        "total": 492,
+        "accuracy": 0.4349775784753363
+      },
+      "qwen-7b": {
+        "correct": 177,
+        "wrong": 262,
+        "unknown": 53,
+        "total": 492,
+        "accuracy": 0.4031890660592255
+      }
+    },
+    "Economics and Finance": {
+      "claude": {
+        "correct": 327,
+        "wrong": 303,
+        "unknown": 15,
+        "total": 645,
+        "accuracy": 0.5190476190476191
+      },
+      "gemini": {
+        "correct": 339,
+        "wrong": 297,
+        "unknown": 9,
+        "total": 645,
+        "accuracy": 0.5330188679245284
+      },
+      "gemma-27b": {
+        "correct": 308,
+        "wrong": 316,
+        "unknown": 21,
+        "total": 645,
+        "accuracy": 0.4935897435897436
+      },
+      "gpt": {
+        "correct": 371,
+        "wrong": 269,
+        "unknown": 5,
+        "total": 645,
+        "accuracy": 0.5796875
+      },
+      "llama3-70b": {
+        "correct": 268,
+        "wrong": 346,
+        "unknown": 31,
+        "total": 645,
+        "accuracy": 0.4364820846905538
+      },
+      "llama3-8b": {
+        "correct": 202,
+        "wrong": 422,
+        "unknown": 21,
+        "total": 645,
+        "accuracy": 0.32371794871794873
+      },
+      "mistral-7b": {
+        "correct": 190,
+        "wrong": 427,
+        "unknown": 28,
+        "total": 645,
+        "accuracy": 0.3079416531604538
+      },
+      "phi4": {
+        "correct": 273,
+        "wrong": 350,
+        "unknown": 22,
+        "total": 645,
+        "accuracy": 0.43820224719101125
+      },
+      "qwen-7b": {
+        "correct": 228,
+        "wrong": 396,
+        "unknown": 21,
+        "total": 645,
+        "accuracy": 0.36538461538461536
+      }
+    },
+    "Arts, Music and Entertainment": {
+      "claude": {
+        "correct": 577,
+        "wrong": 605,
+        "unknown": 18,
+        "total": 1200,
+        "accuracy": 0.48815566835871405
+      },
+      "gemini": {
+        "correct": 629,
+        "wrong": 548,
+        "unknown": 23,
+        "total": 1200,
+        "accuracy": 0.5344095157179269
+      },
+      "gemma-27b": {
+        "correct": 543,
+        "wrong": 605,
+        "unknown": 52,
+        "total": 1200,
+        "accuracy": 0.4729965156794425
+      },
+      "gpt": {
+        "correct": 650,
+        "wrong": 515,
+        "unknown": 35,
+        "total": 1200,
+        "accuracy": 0.5579399141630901
+      },
+      "llama3-70b": {
+        "correct": 502,
+        "wrong": 606,
+        "unknown": 92,
+        "total": 1200,
+        "accuracy": 0.45306859205776173
+      },
+      "llama3-8b": {
+        "correct": 391,
+        "wrong": 780,
+        "unknown": 29,
+        "total": 1200,
+        "accuracy": 0.3339026473099915
+      },
+      "mistral-7b": {
+        "correct": 378,
+        "wrong": 787,
+        "unknown": 35,
+        "total": 1200,
+        "accuracy": 0.3244635193133047
+      },
+      "phi4": {
+        "correct": 503,
+        "wrong": 659,
+        "unknown": 38,
+        "total": 1200,
+        "accuracy": 0.43287435456110157
+      },
+      "qwen-7b": {
+        "correct": 411,
+        "wrong": 751,
+        "unknown": 38,
+        "total": 1200,
+        "accuracy": 0.35370051635111877
+      }
+    },
+    "Science and Technology": {
+      "claude": {
+        "correct": 698,
+        "wrong": 546,
+        "unknown": 67,
+        "total": 1311,
+        "accuracy": 0.5610932475884244
+      },
+      "gemini": {
+        "correct": 710,
+        "wrong": 538,
+        "unknown": 63,
+        "total": 1311,
+        "accuracy": 0.5689102564102564
+      },
+      "gemma-27b": {
+        "correct": 618,
+        "wrong": 581,
+        "unknown": 112,
+        "total": 1311,
+        "accuracy": 0.5154295246038365
+      },
+      "gpt": {
+        "correct": 709,
+        "wrong": 533,
+        "unknown": 69,
+        "total": 1311,
+        "accuracy": 0.57085346215781
+      },
+      "llama3-70b": {
+        "correct": 577,
+        "wrong": 597,
+        "unknown": 137,
+        "total": 1311,
+        "accuracy": 0.49148211243611584
+      },
+      "llama3-8b": {
+        "correct": 440,
+        "wrong": 738,
+        "unknown": 133,
+        "total": 1311,
+        "accuracy": 0.3735144312393888
+      },
+      "mistral-7b": {
+        "correct": 453,
+        "wrong": 726,
+        "unknown": 132,
+        "total": 1311,
+        "accuracy": 0.3842239185750636
+      },
+      "phi4": {
+        "correct": 592,
+        "wrong": 604,
+        "unknown": 115,
+        "total": 1311,
+        "accuracy": 0.49498327759197325
+      },
+      "qwen-7b": {
+        "correct": 477,
+        "wrong": 727,
+        "unknown": 107,
+        "total": 1311,
+        "accuracy": 0.3961794019933555
+      }
+    },
+    "Human Activities and Behavior": {
+      "claude": {
+        "correct": 1097,
+        "wrong": 985,
+        "unknown": 54,
+        "total": 2136,
+        "accuracy": 0.5268972142170989
+      },
+      "gemini": {
+        "correct": 1104,
+        "wrong": 982,
+        "unknown": 50,
+        "total": 2136,
+        "accuracy": 0.5292425695110259
+      },
+      "gemma-27b": {
+        "correct": 964,
+        "wrong": 1081,
+        "unknown": 91,
+        "total": 2136,
+        "accuracy": 0.4713936430317848
+      },
+      "gpt": {
+        "correct": 1123,
+        "wrong": 945,
+        "unknown": 68,
+        "total": 2136,
+        "accuracy": 0.543036750483559
+      },
+      "llama3-70b": {
+        "correct": 923,
+        "wrong": 1074,
+        "unknown": 139,
+        "total": 2136,
+        "accuracy": 0.46219328993490233
+      },
+      "llama3-8b": {
+        "correct": 665,
+        "wrong": 1378,
+        "unknown": 93,
+        "total": 2136,
+        "accuracy": 0.3255017131669114
+      },
+      "mistral-7b": {
+        "correct": 682,
+        "wrong": 1378,
+        "unknown": 76,
+        "total": 2136,
+        "accuracy": 0.33106796116504855
+      },
+      "phi4": {
+        "correct": 861,
+        "wrong": 1188,
+        "unknown": 87,
+        "total": 2136,
+        "accuracy": 0.42020497803806733
+      },
+      "qwen-7b": {
+        "correct": 713,
+        "wrong": 1321,
+        "unknown": 102,
+        "total": 2136,
+        "accuracy": 0.3505408062930187
+      }
+    }
+  },
+  "by_graph": {
+    "Chain-like": {
+      "claude": {
+        "correct": 1790,
+        "wrong": 1686,
+        "unknown": 127,
+        "total": 3603,
+        "accuracy": 0.5149597238204833
+      },
+      "gemini": {
+        "correct": 1850,
+        "wrong": 1648,
+        "unknown": 105,
+        "total": 3603,
+        "accuracy": 0.5288736420811893
+      },
+      "gemma-27b": {
+        "correct": 1663,
+        "wrong": 1748,
+        "unknown": 192,
+        "total": 3603,
+        "accuracy": 0.4875403107593081
+      },
+      "gpt": {
+        "correct": 1928,
+        "wrong": 1545,
+        "unknown": 130,
+        "total": 3603,
+        "accuracy": 0.555139648718687
+      },
+      "llama3-70b": {
+        "correct": 1569,
+        "wrong": 1760,
+        "unknown": 274,
+        "total": 3603,
+        "accuracy": 0.471312706518474
+      },
+      "llama3-8b": {
+        "correct": 1185,
+        "wrong": 2202,
+        "unknown": 216,
+        "total": 3603,
+        "accuracy": 0.34986713906111605
+      },
+      "mistral-7b": {
+        "correct": 1199,
+        "wrong": 2185,
+        "unknown": 219,
+        "total": 3603,
+        "accuracy": 0.3543144208037825
+      },
+      "phi4": {
+        "correct": 1493,
+        "wrong": 1908,
+        "unknown": 202,
+        "total": 3603,
+        "accuracy": 0.43898853278447514
+      },
+      "qwen-7b": {
+        "correct": 1212,
+        "wrong": 2191,
+        "unknown": 200,
+        "total": 3603,
+        "accuracy": 0.35615633264766383
+      }
+    },
+    "Collider-like": {
+      "claude": {
+        "correct": 965,
+        "wrong": 688,
+        "unknown": 48,
+        "total": 1701,
+        "accuracy": 0.5837870538415003
+      },
+      "gemini": {
+        "correct": 1041,
+        "wrong": 608,
+        "unknown": 52,
+        "total": 1701,
+        "accuracy": 0.6312916919345057
+      },
+      "gemma-27b": {
+        "correct": 927,
+        "wrong": 690,
+        "unknown": 84,
+        "total": 1701,
+        "accuracy": 0.5732838589981447
+      },
+      "gpt": {
+        "correct": 1050,
+        "wrong": 593,
+        "unknown": 58,
+        "total": 1701,
+        "accuracy": 0.6390748630553865
+      },
+      "llama3-70b": {
+        "correct": 837,
+        "wrong": 721,
+        "unknown": 143,
+        "total": 1701,
+        "accuracy": 0.537227214377407
+      },
+      "llama3-8b": {
+        "correct": 593,
+        "wrong": 1008,
+        "unknown": 100,
+        "total": 1701,
+        "accuracy": 0.3703935040599625
+      },
+      "mistral-7b": {
+        "correct": 586,
+        "wrong": 1022,
+        "unknown": 93,
+        "total": 1701,
+        "accuracy": 0.3644278606965174
+      },
+      "phi4": {
+        "correct": 801,
+        "wrong": 794,
+        "unknown": 106,
+        "total": 1701,
+        "accuracy": 0.5021943573667712
+      },
+      "qwen-7b": {
+        "correct": 683,
+        "wrong": 925,
+        "unknown": 93,
+        "total": 1701,
+        "accuracy": 0.4247512437810945
+      }
+    },
+    "Correlated": {
+      "claude": {
+        "correct": 133,
+        "wrong": 206,
+        "unknown": 6,
+        "total": 345,
+        "accuracy": 0.39233038348082594
+      },
+      "gemini": {
+        "correct": 103,
+        "wrong": 231,
+        "unknown": 11,
+        "total": 345,
+        "accuracy": 0.3083832335329341
+      },
+      "gemma-27b": {
+        "correct": 106,
+        "wrong": 227,
+        "unknown": 12,
+        "total": 345,
+        "accuracy": 0.3183183183183183
+      },
+      "gpt": {
+        "correct": 127,
+        "wrong": 210,
+        "unknown": 8,
+        "total": 345,
+        "accuracy": 0.3768545994065282
+      },
+      "llama3-70b": {
+        "correct": 103,
+        "wrong": 222,
+        "unknown": 20,
+        "total": 345,
+        "accuracy": 0.3169230769230769
+      },
+      "llama3-8b": {
+        "correct": 83,
+        "wrong": 245,
+        "unknown": 17,
+        "total": 345,
+        "accuracy": 0.2530487804878049
+      },
+      "mistral-7b": {
+        "correct": 71,
+        "wrong": 255,
+        "unknown": 19,
+        "total": 345,
+        "accuracy": 0.21779141104294478
+      },
+      "phi4": {
+        "correct": 104,
+        "wrong": 231,
+        "unknown": 10,
+        "total": 345,
+        "accuracy": 0.31044776119402984
+      },
+      "qwen-7b": {
+        "correct": 86,
+        "wrong": 241,
+        "unknown": 18,
+        "total": 345,
+        "accuracy": 0.26299694189602446
+      }
+    },
+    "Diamond-like": {
+      "claude": {
+        "correct": 104,
+        "wrong": 162,
+        "unknown": 7,
+        "total": 273,
+        "accuracy": 0.39097744360902253
+      },
+      "gemini": {
+        "correct": 101,
+        "wrong": 165,
+        "unknown": 7,
+        "total": 273,
+        "accuracy": 0.37969924812030076
+      },
+      "gemma-27b": {
+        "correct": 68,
+        "wrong": 195,
+        "unknown": 10,
+        "total": 273,
+        "accuracy": 0.2585551330798479
+      },
+      "gpt": {
+        "correct": 97,
+        "wrong": 168,
+        "unknown": 8,
+        "total": 273,
+        "accuracy": 0.3660377358490566
+      },
+      "llama3-70b": {
+        "correct": 55,
+        "wrong": 187,
+        "unknown": 31,
+        "total": 273,
+        "accuracy": 0.22727272727272727
+      },
+      "llama3-8b": {
+        "correct": 46,
+        "wrong": 215,
+        "unknown": 12,
+        "total": 273,
+        "accuracy": 0.17624521072796934
+      },
+      "mistral-7b": {
+        "correct": 48,
+        "wrong": 208,
+        "unknown": 17,
+        "total": 273,
+        "accuracy": 0.1875
+      },
+      "phi4": {
+        "correct": 81,
+        "wrong": 178,
+        "unknown": 14,
+        "total": 273,
+        "accuracy": 0.3127413127413127
+      },
+      "qwen-7b": {
+        "correct": 55,
+        "wrong": 208,
+        "unknown": 10,
+        "total": 273,
+        "accuracy": 0.20912547528517111
+      }
+    },
+    "Fork-like": {
+      "claude": {
+        "correct": 155,
+        "wrong": 243,
+        "unknown": 10,
+        "total": 408,
+        "accuracy": 0.38944723618090454
+      },
+      "gemini": {
+        "correct": 177,
+        "wrong": 226,
+        "unknown": 5,
+        "total": 408,
+        "accuracy": 0.4392059553349876
+      },
+      "gemma-27b": {
+        "correct": 124,
+        "wrong": 262,
+        "unknown": 22,
+        "total": 408,
+        "accuracy": 0.32124352331606215
+      },
+      "gpt": {
+        "correct": 187,
+        "wrong": 217,
+        "unknown": 4,
+        "total": 408,
+        "accuracy": 0.4628712871287129
+      },
+      "llama3-70b": {
+        "correct": 105,
+        "wrong": 272,
+        "unknown": 31,
+        "total": 408,
+        "accuracy": 0.27851458885941643
+      },
+      "llama3-8b": {
+        "correct": 69,
+        "wrong": 318,
+        "unknown": 21,
+        "total": 408,
+        "accuracy": 0.17829457364341086
+      },
+      "mistral-7b": {
+        "correct": 102,
+        "wrong": 291,
+        "unknown": 15,
+        "total": 408,
+        "accuracy": 0.2595419847328244
+      },
+      "phi4": {
+        "correct": 131,
+        "wrong": 262,
+        "unknown": 15,
+        "total": 408,
+        "accuracy": 0.3333333333333333
+      },
+      "qwen-7b": {
+        "correct": 124,
+        "wrong": 269,
+        "unknown": 15,
+        "total": 408,
+        "accuracy": 0.3155216284987277
+      }
+    },
+    "Hydrid": {
+      "claude": {
+        "correct": 464,
+        "wrong": 293,
+        "unknown": 38,
+        "total": 795,
+        "accuracy": 0.6129458388375165
+      },
+      "gemini": {
+        "correct": 442,
+        "wrong": 323,
+        "unknown": 30,
+        "total": 795,
+        "accuracy": 0.5777777777777777
+      },
+      "gemma-27b": {
+        "correct": 383,
+        "wrong": 354,
+        "unknown": 58,
+        "total": 795,
+        "accuracy": 0.519674355495251
+      },
+      "gpt": {
+        "correct": 442,
+        "wrong": 314,
+        "unknown": 39,
+        "total": 795,
+        "accuracy": 0.5846560846560847
+      },
+      "llama3-70b": {
+        "correct": 322,
+        "wrong": 396,
+        "unknown": 77,
+        "total": 795,
+        "accuracy": 0.44846796657381616
+      },
+      "llama3-8b": {
+        "correct": 271,
+        "wrong": 463,
+        "unknown": 61,
+        "total": 795,
+        "accuracy": 0.3692098092643052
+      },
+      "mistral-7b": {
+        "correct": 274,
+        "wrong": 451,
+        "unknown": 70,
+        "total": 795,
+        "accuracy": 0.3779310344827586
+      },
+      "phi4": {
+        "correct": 344,
+        "wrong": 399,
+        "unknown": 52,
+        "total": 795,
+        "accuracy": 0.4629878869448183
+      },
+      "qwen-7b": {
+        "correct": 280,
+        "wrong": 447,
+        "unknown": 68,
+        "total": 795,
+        "accuracy": 0.38514442916093533
+      }
+    }
+  },
+  "summary": {
+    "files_processed": 64125,
+    "missing_coreset_metadata": 0,
+    "missing_variation_domain": 0
+  }
+}

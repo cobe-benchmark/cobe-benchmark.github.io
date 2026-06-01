@@ -12,6 +12,9 @@
   <link rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="stylesheet" href="./static/css/results-chart.css">
+  <link rel="stylesheet" href="./static/css/graph-type-diagram.css">
+  <link rel="stylesheet" href="./static/css/category-examples.css">
 </head>
 
 <body>
@@ -95,6 +98,44 @@
   </div>
 </section>
 
+<!-- Results -->
+<section class="section results-section" id="results">
+  <div class="container is-max-widescreen">
+    <h2 class="title is-3 has-text-centered">Results</h2>
+
+    <div id="results-chart-loading" class="results-loading">Loading results…</div>
+    <div id="results-chart-error" class="results-error" hidden></div>
+
+    <div id="results-chart-panel" class="results-chart-panel" hidden>
+      <div id="results-view-toggle" class="results-view-toggle" role="group" aria-label="Results view"></div>
+      <div class="results-chart-wrap">
+        <canvas id="results-chart" aria-label="Model accuracy chart"></canvas>
+        <div id="graph-type-popover" class="graph-type-popover" hidden aria-hidden="true">
+          <div id="graph-type-popover-title" class="graph-type-popover-title"></div>
+          <div id="graph-type-popover-body" class="graph-type-popover-body"></div>
+        </div>
+      </div>
+      <div id="results-legend" class="results-legend"></div>
+
+      <div id="category-example-panel" class="category-example-panel" hidden aria-hidden="true">
+        <div class="category-example-header">
+          <h3 id="category-example-title" class="category-example-title"></h3>
+          <div class="category-example-nav">
+            <span id="category-example-counter" class="category-example-counter">1 / 10</span>
+            <button type="button" id="category-example-prev" class="category-example-nav-btn" aria-label="Previous example">
+              <i class="fas fa-chevron-left" aria-hidden="true"></i>
+            </button>
+            <button type="button" id="category-example-next" class="category-example-nav-btn" aria-label="Next example">
+              <i class="fas fa-chevron-right" aria-hidden="true"></i>
+            </button>
+          </div>
+        </div>
+        <div id="category-example-body" class="category-example-body"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <footer class="footer">
   <div class="container">
     <div class="content has-text-centered">
@@ -105,5 +146,9 @@
   </div>
 </footer>
 
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="./static/js/graph-type-diagrams.js"></script>
+  <script src="./static/js/category-examples.js"></script>
+  <script src="./static/js/results-chart.js"></script>
 </body>
 </html>

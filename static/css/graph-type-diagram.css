@@ -1,0 +1,45 @@
+.results-chart-wrap {
+  position: relative;
+}
+
+.graph-type-popover {
+  position: absolute;
+  z-index: 20;
+  pointer-events: none;
+  transform: none;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  padding: 0.65rem 0.75rem 0.55rem;
+  min-width: 200px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.12s ease, visibility 0.12s ease;
+}
+
+.graph-type-popover.is-visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.graph-type-popover-title {
+  font-family: 'Google Sans', 'Noto Sans', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #4b5563;
+  text-align: center;
+  margin-bottom: 0.35rem;
+}
+
+.graph-type-popover-body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.graph-type-diagram-svg {
+  display: block;
+  width: 210px;
+  height: auto;
+}
