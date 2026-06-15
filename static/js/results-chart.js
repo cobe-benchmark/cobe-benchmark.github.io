@@ -28,7 +28,7 @@
     'qwen-7b': 'Qwen-2.5-7B',
     phi4: 'Phi-4',
     'gemma-27b': 'Gemma-2-27B',
-    'llama3-70b': 'Llama-3.1-70B-Instruct',
+    'llama3-70b': 'Llama-3.1-70B',
   };
 
   const MODEL_COLORS = {
@@ -692,7 +692,8 @@
       renderChart();
     } catch (err) {
       showError(
-        'Could not load results data. Run python3 eval-results/calculate_statistics.py and serve the site over HTTP.'
+        'Could not load results data. Serve the site over HTTP (e.g. python3 -m http.server) — ' +
+          'opening index.html directly from the filesystem blocks the JSON fetch.'
       );
       console.error('results-chart:', err);
     }
