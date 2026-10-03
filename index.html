@@ -3,14 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>CoBe: Counterfactual Benchmark for Text Editing</title>
+  <title>CoBe: A Benchmark for Conversational Counterfactual Text Editing</title>
   <meta name="description"
-        content="CoBe is a benchmark for counterfactual text editing — testing whether language models can causally edit a story given a 'what if'. Frontier LLMs score only ~54%.">
+        content="CoBe tests whether language models can revise a story in light of a conversational 'what would have happened if' request, keeping fixed what the change does not causally affect. Frontier LLMs average only 58%.">
 
   <!-- Open Graph / social -->
-  <meta property="og:title" content="CoBe: Counterfactual Benchmark for Text Editing">
+  <meta property="og:title" content="CoBe: A Benchmark for Conversational Counterfactual Text Editing">
   <meta property="og:description"
-        content="Can language models reason counterfactually? Frontier LLMs score only ~54% on CoBe. Test your own model.">
+        content="Can language models reason counterfactually? Frontier LLMs average only 58% on CoBe. Test your own model.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://cobe-benchmark.github.io">
   <meta name="twitter:card" content="summary_large_image">
@@ -22,10 +22,10 @@
   <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-  <link rel="stylesheet" href="./static/css/index.css">
-  <link rel="stylesheet" href="./static/css/results-chart.css">
-  <link rel="stylesheet" href="./static/css/graph-type-diagram.css">
-  <link rel="stylesheet" href="./static/css/category-examples.css">
+  <link rel="stylesheet" href="./static/css/index.css?v=20261003">
+  <link rel="stylesheet" href="./static/css/results-chart.css?v=20261003">
+  <link rel="stylesheet" href="./static/css/graph-type-diagram.css?v=20261003">
+  <link rel="stylesheet" href="./static/css/category-examples.css?v=20261003">
 </head>
 
 <body>
@@ -42,6 +42,7 @@
     <div class="navbar-links" id="nav-links">
       <a href="#news">News</a>
       <a href="#findings">Findings</a>
+      <a href="#benchmark">Benchmark</a>
       <a href="#tryit">Try it</a>
       <a href="#leaderboard">Leaderboard</a>
       <a href="#errors">Error types</a>
@@ -56,39 +57,40 @@
   <div class="hero-grid"></div>
   <div class="container hero-inner">
     <span class="venue-badge">
-      <span class="dot"></span> Under review · NeurIPS 2026 Datasets &amp; Benchmarks Track
+      <span class="dot"></span> Under review · ICLR 2027
     </span>
 
     <h1>Can language models<br><span class="grad">reason counterfactually?</span></h1>
 
     <p class="hero-subtitle">
-      <b>CoBe</b> is a benchmark for <b>counterfactual text editing</b> — rewriting a story to reflect a
-      hypothetical "what if" while respecting the causal structure of the scene.
-      Frontier models reach only <b>~54%</b>.
+      <b>CoBe</b> is a benchmark for <b>conversational counterfactual text editing</b>: revising a story in light
+      of a "what would have happened if…" request, while keeping fixed everything the change does not causally
+      affect. Frontier models average only <b>58%</b>.
     </p>
 
     <!-- TODO: replace "Anonymous Authors" with the real author list once the paper is de-anonymized. -->
     <p class="hero-authors">Anonymous Authors</p>
-    <p class="hero-affil">Submitted to the 40th Conference on Neural Information Processing Systems (NeurIPS 2026)</p>
+    <p class="hero-affil">Submitted to the Fifteenth International Conference on Learning Representations (ICLR 2027)</p>
 
     <div class="button-row">
       <a class="btn btn-primary" href="#tryit"><span class="icon"><i class="fas fa-flask"></i></span> Test your model</a>
-      <!-- TODO: replace with the arXiv / OpenReview link once available. -->
-      <a class="btn btn-light" href="https://github.com/cobe-benchmark/counterfactual-reasoning-benchmark">
+      <!-- TODO: add the arXiv / OpenReview link once available. -->
+      <!-- Hidden until the code repo is public: remove `hidden` to reveal. -->
+      <a class="btn btn-light" href="https://github.com/cobe-benchmark/counterfactual-reasoning-benchmark" hidden>
         <span class="icon"><i class="fab fa-github"></i></span> Code
       </a>
-      <a class="btn btn-light" href="https://huggingface.co/datasets/cobe-team/counterfactual-reasoning-benchmark">
-        <span class="icon"><i class="fas fa-database"></i></span> Dataset
+      <a class="btn btn-light" href="https://kaggle.com/datasets/5ae0d5bcf4d8f3ed1af4aae45466f2b49d4b21a3d40783980a2bd3b315437204">
+        <span class="icon"><i class="fas fa-database"></i></span> Dataset sample
       </a>
       <a class="btn btn-ghost" href="#leaderboard"><span class="icon"><i class="fas fa-trophy"></i></span> Leaderboard</a>
     </div>
 
     <div class="stat-strip">
-      <div class="stat"><div class="stat-num">2,377</div><div class="stat-label">Scenarios</div></div>
+      <div class="stat"><div class="stat-num">2,000</div><div class="stat-label">Scenarios</div></div>
       <div class="stat"><div class="stat-num">7</div><div class="stat-label">Domains</div></div>
       <div class="stat"><div class="stat-num">6</div><div class="stat-label">Causal graph types</div></div>
       <div class="stat"><div class="stat-num">9</div><div class="stat-label">Models evaluated</div></div>
-      <div class="stat"><div class="stat-num">53.9%</div><div class="stat-label">Best frontier avg.</div></div>
+      <div class="stat"><div class="stat-num">58.05%</div><div class="stat-label">Frontier avg.</div></div>
     </div>
   </div>
 </header>
@@ -106,26 +108,28 @@
     <ul class="timeline reveal-up">
       <li class="timeline-item">
         <span class="timeline-dot"></span>
+        <div class="timeline-date">Sep 2026</div>
+        <p class="timeline-text"><b>Paper submitted to ICLR 2027.</b><span class="tag-pill tag-new">New</span>
+          The submission covers 2,000 scenarios and includes prompt ablations, a human-agreement study for the LLM
+          judge, and a taxonomy of the failure patterns models fall into.</p>
+      </li>
+      <li class="timeline-item">
+        <span class="timeline-dot"></span>
+        <div class="timeline-date">Sep 2026</div>
+        <p class="timeline-text"><b>Public sample released</b> — 200 of the 2,000 scenarios (10%), each with its
+          evaluation criteria, available on
+          <a href="https://kaggle.com/datasets/5ae0d5bcf4d8f3ed1af4aae45466f2b49d4b21a3d40783980a2bd3b315437204">Kaggle</a>.</p>
+      </li>
+      <li class="timeline-item">
+        <span class="timeline-dot"></span>
         <div class="timeline-date">Jun 2026</div>
-        <p class="timeline-text"><b>Project website &amp; interactive demo launched.</b><span class="tag-pill tag-new">New</span>
+        <p class="timeline-text"><b>Project website &amp; interactive demo launched.</b>
           Browse the leaderboard, explore failure modes, and test your own model on real CoBe scenarios.</p>
-      </li>
-      <li class="timeline-item">
-        <span class="timeline-dot"></span>
-        <div class="timeline-date">Jun 2026</div>
-        <p class="timeline-text"><b>Public split released</b> — 1,007 of the 2,377 scenarios are openly available,
-          each with evaluation criteria for principled, causally-grounded scoring.</p>
-      </li>
-      <li class="timeline-item">
-        <span class="timeline-dot"></span>
-        <div class="timeline-date">May 2026</div>
-        <p class="timeline-text"><b>Paper submitted</b> to the NeurIPS 2026 Datasets &amp; Benchmarks Track.</p>
       </li>
       <li class="timeline-item is-muted">
         <span class="timeline-dot"></span>
         <div class="timeline-date">Coming up</div>
-        <p class="timeline-text">Camera-ready, leaderboard submissions and workshop talks.<span class="tag-pill tag-soon">Soon</span>
-          Want your model on the board? <a href="#leaderboard">See how to submit</a>.</p>
+        <p class="timeline-text">Code release and leaderboard submissions.<span class="tag-pill tag-soon">Soon</span></p>
       </li>
     </ul>
   </div>
@@ -137,34 +141,49 @@
     <div class="reveal-up section-head-center">
       <span class="eyebrow">Key findings</span>
       <h2 class="section-title">What CoBe reveals about today's models</h2>
-      <p class="section-lead">Counterfactual editing looks easy for humans, yet it stress-tests a capability that
-        scale alone has not solved.</p>
+      <p class="section-lead">People answer "what would have happened if…" questions every day without being told
+        what to keep fixed. Language models often default to association instead.</p>
     </div>
 
     <div class="card-grid reveal-up">
       <div class="feature-card">
         <div class="feature-icon"><i class="fas fa-gauge-high"></i></div>
         <h3>Far from solved</h3>
-        <p>Even the strongest model tops out at <span class="stat-inline">55.7%</span>, with frontier models
-          averaging just <b>53.9%</b> — barely past chance on a task humans find intuitive.</p>
+        <p>The best model, GPT-5.4-Pro, reaches <span class="stat-inline">61.34%</span>, and frontier models
+          average just <b>58.05%</b>.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-shuffle"></i></div>
+        <h3>Association by default</h3>
+        <p>Models often fall back on associational generation. Of the three checks, editing facts that should
+          stay fixed is the most common failure for every model.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon"><i class="fas fa-arrow-trend-up"></i></div>
         <h3>Scaling isn't enough</h3>
-        <p>Gemma-2-27B lands within <span class="stat-inline">~4%</span> of flagship models, while 7–8B open
-          models hover near chance. Bigger weights don't reliably buy causal reasoning.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon"><i class="fas fa-fingerprint"></i></div>
-        <h3>Distinct error fingerprints</h3>
-        <p>Models fail differently: some optimize for correlational consistency, others drop background facts
-          or break on numerical changes. CoBe exposes these idiosyncrasies.</p>
+        <p>Llama-3.1-70B lands within <span class="stat-inline">6.5 points</span> of Claude-Opus-4.7.
+          Performance does not scale consistently with model size or output length.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon"><i class="fas fa-diagram-project"></i></div>
         <h3>Causal structure matters</h3>
-        <p>Accuracy drops on <b>correlated</b>, <b>fork</b> and <b>diamond</b> graphs — models mistake
-          correlation for causation and fail to propagate effects across branches.</p>
+        <p>Accuracy drops most on <b>correlated</b> graphs, where models read correlation as causation, and is
+          also lower on <b>diamond</b> graphs (and, to a lesser extent, fork and hybrid graphs), where effects
+          must propagate across branches.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-fingerprint"></i></div>
+        <h3>Distinct error fingerprints</h3>
+        <p>Among frontier models, Claude handles numerical changes best but struggles to hold latent factors fixed,
+          Gemini maintains coherent grammatical structure (fewest connector errors) but makes slightly more
+          upstream edits, and GPT is the most error-prone on numerical updates.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-list-check"></i></div>
+        <h3>Spelling it out still falls short</h3>
+        <p>Rephrasing the request (A/B/C) barely moves scores, and stronger conversational cues add only about
+          5–6 points for frontier models. Even a step-by-step causal recipe leaves GPT-5.4-Pro at
+          <span class="stat-inline">81.3%</span> and Gemini-3.1-Pro at <b>76.1%</b>.</p>
       </div>
     </div>
   </div>
@@ -176,32 +195,85 @@
     <div class="reveal-up section-head-center">
       <span class="eyebrow">The task</span>
       <h2 class="section-title">Counterfactual edit vs. associational rewrite</h2>
-      <p class="section-lead">Both answer a "what if", but only one reasons about cause and effect.
-        Prior benchmarks blur the line — CoBe pulls them apart.</p>
+      <p class="section-lead">Both answer a "what if", but only one reasons about cause and effect. The grammar is
+        the cue: subjunctive "would have…had" asks for Rung 3 of Pearl's causal ladder, while indicative "did…if"
+        asks for Rung 1.</p>
     </div>
 
     <div class="ladder-compare reveal-up">
       <div class="ladder-card is-cf">
-        <span class="ladder-badge"><i class="fas fa-layer-group"></i> Counterfactual · Pearl Level 3</span>
-        <h3>Reason about a hypothetical intervention</h3>
-        <p>Fix the factual scenario and its hidden background factors, imagine an intervention, then
-          rewrite only what is <b>causally downstream</b>.</p>
-        <blockquote class="ladder-q">"Kennedy died on Nov 22. What <b>would have happened</b> had Oswald
-          <b>not shot</b> him?"</blockquote>
-        <p style="margin-bottom:0.5rem"><b>Answer:</b> He lives — Oswald acted alone, so with no shooter,
-          Kennedy survives.</p>
+        <span class="ladder-badge"><i class="fas fa-layer-group"></i> Counterfactual · Rung 3</span>
+        <h3>Imagine an intervention, hold the background fixed</h3>
+        <p>Keep the background factors and every event the change does not causally affect, enact the
+          hypothetical edit, and update only what is <b>causally downstream</b>.</p>
+        <blockquote class="ladder-q">"Given that Kennedy died on Nov 22, what <b>would have happened</b> if Oswald
+          <b>had not</b> shot him?"</blockquote>
+        <p style="margin-bottom:0.5rem"><b>Answer:</b> If Oswald had not shot Kennedy, and he had acted alone,
+          Kennedy would have been alive on Nov 22.</p>
         <span class="ladder-formula">P(T<sub>A=0</sub> | A=1, B=0, C=0)</span>
       </div>
 
       <div class="ladder-card is-assoc">
-        <span class="ladder-badge"><i class="fas fa-shuffle"></i> Associational · Pearl Level 1</span>
-        <h3>Rewrite by statistical correlation</h3>
-        <p>Condition on an alternative event and generate text that is merely <b>likely to co-occur</b> with
-          it in the training corpus — no causal model required.</p>
-        <blockquote class="ladder-q">"Given that Kennedy died, what happened if Oswald <b>did not shoot</b>?"</blockquote>
-        <p style="margin-bottom:0.5rem"><b>Answer:</b> Someone else shot him — a plausible correlate, but
-          not a counterfactual edit.</p>
+        <span class="ladder-badge"><i class="fas fa-shuffle"></i> Associational · Rung 1</span>
+        <h3>Condition on the change, let correlations fill in</h3>
+        <p>Generate text <b>statistically likely to co-occur</b> with the altered condition, even if that means
+          changing background factors along the way.</p>
+        <blockquote class="ladder-q">"Given that Kennedy died on Nov 22, what <b>happened</b> if Oswald
+          <b>did not</b> shoot him?"</blockquote>
+        <p style="margin-bottom:0.5rem"><b>Answer:</b> If Oswald did not shoot Kennedy, someone else did, since
+          Kennedy died on Nov 22.</p>
         <span class="ladder-formula">P(T | A=0, B=0)</span>
+      </div>
+    </div>
+
+    <div class="task-steps reveal-up">
+      <h3>Given a story and a conversational edit request, the model must infer and carry out three steps</h3>
+      <ol>
+        <li><span class="step-num">a</span><div><b>Hold fixed</b> the background factors and events in the story
+          that the intervened variable does not causally affect.</div></li>
+        <li><span class="step-num">b</span><div><b>Enact the intervention</b> by imagining an externally enforced
+          edit to the storyline.</div></li>
+        <li><span class="step-num">c</span><div><b>Update the consequences</b>: reason about the commonsense
+          downstream effects and produce the edited text.</div></li>
+      </ol>
+      <p class="task-note"><i class="fas fa-comments"></i> The prompt never mentions causal graphs, counterfactuals or
+        step-by-step procedures. As in everyday conversation, the model has to work out for itself what to
+        preserve and what to update.</p>
+    </div>
+
+    <div class="usecase reveal-up">
+      <div class="usecase-head">
+        <span class="eyebrow">Why it matters</span>
+        <h3>An idealized healthcare workflow</h3>
+        <p>A staff member asks an AI assistant to turn a medical record into training case studies under different
+          treatments. Gemini-3.1-Pro alters the patient's symptoms instead of only the treatment, so the error
+          propagates into the downstream workflow.</p>
+      </div>
+      <div class="usecase-grid">
+        <div class="demo-box demo-box--scenario">
+          <div class="demo-label">📄 Case record</div>
+          The lead surgeon examined the patient's MRI and noticed a <b>clear fracture in the left femur</b>. Due to
+          this visible break in the bone, he scheduled the patient for immediate surgery. The medical staff found
+          all in order, and prepared the operating room for the procedure.
+        </div>
+        <div class="demo-box demo-box--query">
+          <div class="demo-label">✏️ Prompt</div>
+          "Rewrite the original text, based on what would have happened in this scenario had he recommended
+          <b>physiotherapy instead</b>."
+        </div>
+        <div class="demo-box demo-box--output-static is-wrong">
+          <div class="demo-label">✗ Gemini-3.1-Pro — observed edit</div>
+          "… while <b>the bone remained intact</b>, there was significant soft-tissue inflammation and restricted
+          mobility. … he recommended a structured course of physical therapy … The medical staff processed the
+          referral and prepared the rehabilitation clinic."
+          <div class="usecase-flag">Patient's symptoms altered to match the edited treatment</div>
+        </div>
+        <div class="demo-box demo-box--gold">
+          <div class="demo-label">✅ Example of a valid answer</div>
+          "… <b>clear fracture in the left femur</b>. … he recommended physical therapy. The medical staff was
+          baffled by the lack of surgical intervention and reported the issue …"
+          <div class="usecase-flag is-ok">Keep the symptoms; change the treatment and the staff's reaction</div>
+        </div>
       </div>
     </div>
   </div>
@@ -216,22 +288,212 @@
     </div>
     <div class="abstract-card reveal-up">
       <p>
-        <i>Counterfactual text editing</i> — the ability to edit a text by incorporating a hypothetical
-        change in the scenario being described — is a core reasoning skill, particularly relevant in domains
-        like medicine, law and business. This task requires causal understanding of the underlying scenario.
-        By contrast, <i>associational text generation</i> relies on correlational reasoning: given a text and
-        an altered condition, it generates similar text that co-occurs with the alternative condition in the
-        training corpus. Despite the safety-critical requirement of counterfactual reasoning skills, prior
-        benchmarks do not clearly distinguish between these two very different modes of reasoning.
-      </p>
-      <p>
-        We introduce <b>CoBe (Counterfactual Benchmark)</b>: a new testbed designed to assess the native
-        ability of language models to perform counterfactual edits to a given text. Our dataset consists of
-        <b>2,377 questions</b>, each testing counterfactual reasoning across a variety of domains in science,
-        human behavior and common-sense. We test a suite of frontier and smaller models on our benchmark,
-        with frontier models only achieving an average score of <b>53.94%</b>.
+        <i>Counterfactual text editing</i> is the ability to revise a given text in light of a hypothetical change
+        while preserving facts not causally affected by that change. When asked what would have happened if a
+        doctor had not recommended surgery, the model output should retain the patient's medical history and
+        modify only the consequences of the decision. This requires causal understanding: a model must determine,
+        without being explicitly instructed to, what events are affected by the hypothetical change and what
+        should remain fixed. This skill is central to human reasoning, especially in safety-critical domains like
+        healthcare or law. By contrast, the task of <i>associational text generation</i> merely generates text
+        statistically associated with the altered condition. In the medical example, an associational response
+        might make the patient's symptoms less severe because milder cases correlate with no surgery. Such
+        responses produce a plausible scenario, but not the counterfactual version of the given one. Prior
+        counterfactual-text datasets do not clearly separate these modes of reasoning. We introduce the
+        <b>Counterfactual Benchmark (CoBe)</b>, a testbed for models' zero-shot ability to counterfactually edit a
+        given textual scenario when prompted to do so in a <i>conversationally natural</i> way. CoBe contains
+        <b>2000 questions</b> spanning healthcare, science and engineering, business, and everyday scenarios. We
+        test a suite of frontier and smaller models, with frontier systems achieving an average score of
+        <b>58.05%</b>. Our findings indicate that models frequently default to associational generation rather
+        than preserving the causal structure of the original scenario. Moreover, performance does not scale
+        consistently with either model size or output token length, suggesting that the failure may reflect
+        model training objectives rather than insufficient model capacity.
       </p>
     </div>
+  </div>
+</section>
+
+<!-- ============================ BENCHMARK ========================== -->
+<section class="section is-soft" id="benchmark">
+  <div class="container">
+    <div class="reveal-up section-head-center">
+      <span class="eyebrow">The benchmark</span>
+      <h2 class="section-title">How CoBe is built and scored</h2>
+      <p class="section-lead">2,000 short stories, each paired with conversational edit requests and human-verified
+        evaluation criteria. Responses are checked against the criteria rather than a reference answer, so many
+        different valid rewrites can pass.</p>
+    </div>
+
+    <h3 class="sub-title reveal-up">Four-stage construction</h3>
+    <ol class="pipeline reveal-up">
+      <li class="pipeline-step">
+        <div class="pipeline-num">425</div>
+        <div class="pipeline-label">candidate examples</div>
+        <p>Written by student researchers who had completed a graduate causal inference course, each with a story,
+          an edit request and evaluation criteria.</p>
+      </li>
+      <li class="pipeline-step">
+        <div class="pipeline-num">106</div>
+        <div class="pipeline-label">core examples</div>
+        <p>Reviewed and refined by the authors to span different domains, causal structures and potential
+          reasoning failures.</p>
+      </li>
+      <li class="pipeline-step">
+        <div class="pipeline-num">25×</div>
+        <div class="pipeline-label">variations per core</div>
+        <p>LLM-assisted augmentation adds domain and linguistic variety while preserving the intended causal
+          relationships.</p>
+      </li>
+      <li class="pipeline-step">
+        <div class="pipeline-num">2,000</div>
+        <div class="pipeline-label">retained of 2,650</div>
+        <p>Author review and external expert feedback removed 650 incorrect or weak examples.</p>
+      </li>
+    </ol>
+
+    <div class="bench-grid reveal-up">
+      <div class="bench-card">
+        <h4><i class="fas fa-table-list"></i> Dataset statistics</h4>
+        <table class="kv-table">
+          <tr><td>Scenarios</td><td>2,000</td></tr>
+          <tr><td>Domains</td><td>7</td></tr>
+          <tr><td>Avg. words / scenario</td><td>39</td></tr>
+          <tr><td>Avg. sentences / scenario</td><td>2.35</td></tr>
+          <tr><td>Avg. clauses / scenario</td><td>5.43</td></tr>
+          <tr><td>Avg. clauses / sentence</td><td>2.44</td></tr>
+          <tr><td>Query phrasings / scenario</td><td>3</td></tr>
+          <tr><td>Publicly released</td><td>200 (10%)</td></tr>
+        </table>
+      </div>
+
+      <div class="bench-card">
+        <h4><i class="fas fa-briefcase"></i> Domains</h4>
+        <ul class="dist-bars">
+          <li><span class="dist-label">Science &amp; Research</span><span class="dist-bar"><span style="--w:16.0"></span></span><span class="dist-val">16.0%</span></li>
+          <li><span class="dist-label">Engineering</span><span class="dist-bar"><span style="--w:15.7"></span></span><span class="dist-val">15.7%</span></li>
+          <li><span class="dist-label">Business &amp; Services</span><span class="dist-bar"><span style="--w:14.5"></span></span><span class="dist-val">14.5%</span></li>
+          <li><span class="dist-label">Everyday</span><span class="dist-bar"><span style="--w:14.2"></span></span><span class="dist-val">14.2%</span></li>
+          <li><span class="dist-label">Healthcare</span><span class="dist-bar"><span style="--w:6.0"></span></span><span class="dist-val">6.0%</span></li>
+          <li><span class="dist-label">Legal, Policy &amp; HR</span><span class="dist-bar"><span style="--w:4.7"></span></span><span class="dist-val">4.7%</span></li>
+          <li><span class="dist-label">Others</span><span class="dist-bar"><span style="--w:28.9"></span></span><span class="dist-val">28.9%</span></li>
+        </ul>
+      </div>
+
+      <div class="bench-card">
+        <h4><i class="fas fa-user-check"></i> External expert audit</h4>
+        <p class="bench-note">Three causal-inference experts outside the project independently rated the same 100
+          random examples on a five-point scale.</p>
+        <div class="audit-grid">
+          <div><span class="audit-num">4.85</span><span class="audit-label">Coherence</span></div>
+          <div><span class="audit-num">4.94</span><span class="audit-label">Grammar</span></div>
+          <div><span class="audit-num">4.71</span><span class="audit-label">Counterfactual validity</span></div>
+          <div><span class="audit-num">5.0</span><span class="audit-label">Diversity</span></div>
+        </div>
+        <p class="bench-note">Mean scores out of 5, measured on the audited sample before the final exclusions. The
+          experts flagged some contrived causal relationships, which the authors traced to one batch of
+          augmented samples and excluded.</p>
+      </div>
+    </div>
+
+    <div class="bench-split reveal-up">
+      <div class="bench-card">
+        <h4><i class="fas fa-comment-dots"></i> Three conversational phrasings per scenario</h4>
+        <ul class="phrasing-list">
+          <li><span class="ph-key">A</span>"Rewrite the original text, based on what would have happened instead
+            had…&lt;intervention&gt;."</li>
+          <li><span class="ph-key">B</span>"Based on the preceding text, rewrite the scenario to reflect what would
+            have happened if…&lt;intervention had occurred&gt;."</li>
+          <li><span class="ph-key">C</span>"Rewrite the above passage to illustrate what would have occurred
+            had…&lt;intervention&gt;."</li>
+        </ul>
+        <p class="bench-note">Scores are averaged over all three, which reduces ambiguity from any single phrasing.</p>
+      </div>
+
+      <div class="bench-card">
+        <h4><i class="fas fa-scale-balanced"></i> Scored by three checks</h4>
+        <ul class="check-list">
+          <li><span class="check-key">E1</span><div><b>Preserve unaffected facts.</b> Everything listed under
+            <i>Should NOT change</i> must still hold in the rewrite.</div></li>
+          <li><span class="check-key">E2</span><div><b>Make the required changes.</b> Every original fact listed
+            under <i>Should change</i> must no longer hold.</div></li>
+          <li><span class="check-key">E0</span><div><b>Use valid connectors.</b> Words like <i>because</i>,
+            <i>so</i>, <i>but</i> and <i>despite</i> must reflect the relationships in the rewritten scenario.</div></li>
+        </ul>
+        <p class="bench-note">Claude-Opus-4.7 acts as the judge, and a response is correct only if it passes all
+          three checks.</p>
+      </div>
+    </div>
+
+    <div class="agreement reveal-up">
+      <div class="agreement-kappa">
+        <span class="agreement-num">κ = 0.812</span>
+        <span class="agreement-label">Cohen's kappa between the LLM judge and the majority of three expert raters</span>
+      </div>
+      <div class="agreement-detail">
+        <p>On 250 sampled model responses, the judge reaches <b>92.1%</b> accuracy (precision 82.5%, recall 91.7%,
+          F1 86.81% with failure as the positive class). The raters saw the story, query and response but not the
+          evaluation criteria, so the agreement also supports the soundness of the criteria themselves.</p>
+      </div>
+    </div>
+
+    <details class="sample-json reveal-up">
+      <summary><i class="fas fa-code"></i> What a dataset entry looks like (317v3)</summary>
+      <pre>{
+  "Core Set ID": 317,
+  "Variation ID": 3,
+  "Domain": "Everyday",
+  "Story": "The water level in the bathtub is rising rapidly because the main faucet is pouring water in at a rate of 5 gallons per minute.",
+  "Query": [
+    "Rewrite the original text, based on what would have happened instead had the drain been opened, leaking water at 8 gallons per minute.",
+    "Based on the preceding text, rewrite the scenario to reflect what would have happened if the drain had been opened, leaking water at 8 gallons per minute.",
+    "Rewrite the above passage to illustrate what would have occurred had the drain been opened, leaking water at 8 gallons per minute."
+  ],
+  "Illustrative answer (not scored)": "The faucet continues to pour water into the bathtub at 5 gallons per minute, while the opened drain removes 8 gallons per minute. The water level falls as the tub loses a net 3 gallons per minute.",
+  "Evaluation criteria": [
+    "The main faucet is pouring water in at a rate of 5 gallons per minute.",
+    "The water level in the bathtub is rising rapidly."
+  ]
+}</pre>
+      <p class="bench-note">The two criteria strings list, respectively, facts to preserve and original facts to
+        revise. IDs read <code>XXXvYY</code>: core example <code>XXX</code>, variation <code>YY</code>.</p>
+    </details>
+
+    <div class="compare reveal-up">
+      <h3 class="sub-title">Compared with prior benchmarks</h3>
+      <div class="compare-scroll">
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>Benchmark</th>
+              <th>Counterfactual editing (3 steps)</th>
+              <th>Narrative scenarios</th>
+              <th>No causal structure given</th>
+              <th>Open-ended generation</th>
+              <th>Expert / formal verification</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>TimeTravel</td><td class="y">✓</td><td class="y">✓</td><td class="n">✗</td><td class="y">✓</td><td class="n">✗</td></tr>
+            <tr><td>CRASS</td><td class="n">✗</td><td class="y">✓</td><td class="y">✓</td><td class="n">✗</td><td class="n">✗</td></tr>
+            <tr><td>CLadder</td><td class="y">✓</td><td class="n">✗</td><td class="n">✗</td><td class="n">✗</td><td class="y">✓</td></tr>
+            <tr><td>CounterBench</td><td class="y">✓</td><td class="n">✗</td><td class="n">✗</td><td class="n">✗</td><td class="y">✓</td></tr>
+            <tr class="is-ours"><td>CoBe (ours)</td><td class="y">✓</td><td class="y">✓</td><td class="y">✓</td><td class="y">✓</td><td class="y">✓</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ GRAPH TYPES ======================== -->
+<section class="section" id="graphs">
+  <div class="container">
+    <div class="reveal-up section-head-center">
+      <span class="eyebrow">Causal structure</span>
+      <h2 class="section-title">Six families of causal graphs</h2>
+      <p class="section-lead">Unlike prior counterfactual editing datasets, CoBe varies the causal structure
+        connecting events in each story, so a model must propagate effects correctly rather than pattern-match.</p>
+    </div>
+    <div class="graph-gallery reveal-up" id="graph-gallery"></div>
   </div>
 </section>
 
@@ -241,15 +503,16 @@
     <div class="reveal-up section-head-center">
       <span class="eyebrow">Test your model</span>
       <h2 class="section-title">Try it yourself</h2>
-      <p class="section-lead">Pick a real CoBe scenario, copy the prompt into <i>any</i> model, paste back its
-        answer, then reveal the evaluation criteria and see how benchmarked models did on the exact same item.</p>
+      <p class="section-lead">Pick a CoBe scenario and copy the prompt into <i>any</i> model. It is just the story
+        and the request, with no extra instructions. Paste back the answer, then reveal the evaluation criteria and
+        check it yourself.</p>
     </div>
 
     <div id="tryit-status" class="results-loading reveal-up">Loading interactive examples…</div>
 
     <div class="tryit-panel reveal-up" id="tryit-panel" hidden>
       <div class="tryit-toolbar">
-        <label for="tryit-domain">Domain</label>
+        <label for="tryit-domain">Topic</label>
         <span class="select-wrap"><select id="tryit-domain"></select></span>
         <button class="tryit-nav-btn" id="tryit-shuffle" title="Jump to another example"><i class="fas fa-shuffle"></i></button>
         <span class="tryit-spacer"></span>
@@ -260,7 +523,7 @@
 
       <div class="tryit-body">
         <div class="demo-box demo-box--scenario">
-          <div class="demo-label">📄 Scenario</div>
+          <div class="demo-label">📄 Story</div>
           <div id="tryit-scenario"></div>
         </div>
         <div class="demo-box demo-box--query">
@@ -275,11 +538,11 @@
 
         <textarea class="tryit-paste" id="tryit-paste"
           placeholder="Paste your model's rewritten text here, then check it against the criteria you reveal below…"></textarea>
-        <p class="tryit-paste-hint">A valid edit changes everything causally downstream of the intervention —
-          and nothing else.</p>
+        <p class="tryit-paste-hint">A valid edit keeps every fact the change does not causally affect, and revises
+          the ones it does.</p>
 
         <button class="btn btn-primary reveal-btn" id="tryit-reveal">
-          <span class="icon">🔍</span> Reveal evaluation criteria &amp; how models did
+          <span class="icon">🔍</span> Reveal evaluation criteria
         </button>
 
         <div class="tryit-answer" id="tryit-answer" hidden></div>
@@ -294,8 +557,8 @@
     <div class="reveal-up section-head-center">
       <span class="eyebrow">Results</span>
       <h2 class="section-title">Leaderboard</h2>
-      <p class="section-lead">Overall accuracy across all 2,377 scenarios and three query phrasings.
-        Accuracy = correct / (correct + wrong); ambiguous outputs are excluded.</p>
+      <p class="section-lead">Accuracy on all 2,000 scenarios, averaged across the three query phrasings
+        (± standard deviation across phrasings). A response counts as correct only if it passes all three checks.</p>
     </div>
 
     <div class="leaderboard-wrap reveal-up">
@@ -310,7 +573,7 @@
             <tr>
               <th>#</th>
               <th class="sortable" data-sort="model">Model <span class="sort-ind">↕</span></th>
-              <th class="sortable hide-sm" data-sort="org">Developer <span class="sort-ind">↕</span></th>
+              <th class="sortable hide-sm" data-sort="type">Access <span class="sort-ind">↕</span></th>
               <th class="hide-sm">Params</th>
               <th class="sortable is-sorted" data-sort="accuracy">Accuracy <span class="sort-ind">▼</span></th>
               <th></th>
@@ -322,9 +585,11 @@
       <div class="lb-status results-loading" id="leaderboard-status">Loading leaderboard…</div>
       <div class="lb-chance">
         <i class="fas fa-circle-info"></i>
-        Random-baseline behaviour is well below frontier scores — yet the best model still answers fewer than
-        4 in 7 counterfactual edits correctly. <b>Want to be listed?</b> Open an issue on the
-        <a href="https://github.com/cobe-benchmark/counterfactual-reasoning-benchmark">GitHub repo</a> with your results.
+        <span>Even the best model gets fewer than two in three counterfactual edits right.
+          <!-- Hidden until the code repo is public: remove `hidden` to reveal. -->
+          <span hidden><b>Want to be listed?</b> Open an issue on the
+          <a href="https://github.com/cobe-benchmark/counterfactual-reasoning-benchmark">GitHub repo</a> with your
+          results.</span></span>
       </div>
     </div>
   </div>
@@ -336,9 +601,9 @@
     <div class="reveal-up section-head-center">
       <span class="eyebrow">Explore</span>
       <h2 class="section-title">Accuracy, sliced every way</h2>
-      <p class="section-lead">Switch between the aggregate view, per-domain and per-graph-type breakdowns.
-        In the grouped views, <b>click a category</b> to open representative examples; hover a graph type to
-        preview its causal structure.</p>
+      <p class="section-lead">Switch between the overall scores and the paper's breakdowns by causal graph type,
+        query phrasing, error type and failure pattern. In the graph-type view, hover a label to preview its
+        causal structure.</p>
     </div>
 
     <div id="results-chart-loading" class="results-loading">Loading results…</div>
@@ -354,7 +619,9 @@
         </div>
       </div>
       <div id="results-legend" class="results-legend"></div>
+      <p id="results-caption" class="results-explain"></p>
 
+      <!-- Example explorer for the earlier evaluation run; enabled by SHOW_LEGACY_VIEWS in results-chart.js. -->
       <div id="category-example-panel" class="category-example-panel" hidden aria-hidden="true">
         <div class="category-example-header">
           <h3 id="category-example-title" class="category-example-title"></h3>
@@ -374,14 +641,79 @@
   </div>
 </section>
 
+<!-- =========================== PROMPT ABLATIONS ===================== -->
+<section class="section" id="ablations">
+  <div class="container is-narrow">
+    <div class="reveal-up section-head-center">
+      <span class="eyebrow">Prompt ablations</span>
+      <h2 class="section-title">Does spelling out the task help?</h2>
+      <p class="section-lead">Three models were re-run on the same 500 randomly sampled examples with prompts that
+        give progressively more explicit guidance. Tiers 3 and 4 hand the model the editing rules, so they fall
+        outside CoBe's conversational task and serve as instruction-assisted controls.</p>
+    </div>
+
+    <div class="ablation-wrap reveal-up">
+      <div class="compare-scroll">
+        <table class="ablation-table">
+          <thead>
+            <tr>
+              <th>Prompt tier</th>
+              <th>GPT-5.4-Pro</th>
+              <th>Gemini-3.1-Pro</th>
+              <th>Qwen-2.5-7B</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>Tier 1 · A–C</b><span class="tier-desc">Original conversational prompts</span></td>
+              <td><span class="abl-val">66.2%</span><span class="abl-bar"><span style="width:66.2%"></span></span></td>
+              <td><span class="abl-val">58.7%</span><span class="abl-bar"><span style="width:58.7%"></span></span></td>
+              <td><span class="abl-val">36.2%</span><span class="abl-bar"><span style="width:36.2%"></span></span></td>
+            </tr>
+            <tr>
+              <td><b>Tier 2 · D–G</b><span class="tier-desc">More explicit conversational prompts</span></td>
+              <td><span class="abl-val">71.7%</span><span class="abl-bar"><span style="width:71.7%"></span></span></td>
+              <td><span class="abl-val">64.4%</span><span class="abl-bar"><span style="width:64.4%"></span></span></td>
+              <td><span class="abl-val">33.3%</span><span class="abl-bar"><span style="width:33.3%"></span></span></td>
+            </tr>
+            <tr class="is-control">
+              <td><b>Tier 3 · H1</b><span class="tier-desc">Explicit "keep prior and unaffected facts unchanged, and update
+                the consequences" instruction</span></td>
+              <td><span class="abl-val">73.5%</span><span class="abl-bar"><span style="width:73.5%"></span></span></td>
+              <td><span class="abl-val">67.1%</span><span class="abl-bar"><span style="width:67.1%"></span></span></td>
+              <td><span class="abl-val">25.0%</span><span class="abl-bar"><span style="width:25.0%"></span></span></td>
+            </tr>
+            <tr class="is-control">
+              <td><b>Tier 4 · H2</b><span class="tier-desc">Detailed step-by-step causal recipe (variables, graph,
+                do-intervention, update descendants)</span></td>
+              <td><span class="abl-val">81.3%</span><span class="abl-bar"><span style="width:81.3%"></span></span></td>
+              <td><span class="abl-val">76.1%</span><span class="abl-bar"><span style="width:76.1%"></span></span></td>
+              <td><span class="abl-val">32.0%</span><span class="abl-bar"><span style="width:32.0%"></span></span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <ul class="ablation-notes">
+        <li>Stronger conversational cues lift GPT-5.4-Pro and Gemini-3.1-Pro by 5.5 and 5.7 points, but Qwen-2.5-7B
+          drops 2.9 points.</li>
+        <li>Spelling out the editing rules (H1) adds only 1.8–2.7 points over Tier 2 for the frontier models, and
+          Qwen falls to 25.0%.</li>
+        <li>Even with a full causal recipe, GPT-5.4-Pro's best score of 81.3% leaves 18.7% of responses failing the
+          checks. The benchmark stays unsaturated.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
 <!-- ============================ ERROR TYPES ======================== -->
-<section class="section" id="errors">
+<section class="section is-soft" id="errors">
   <div class="container">
     <div class="reveal-up section-head-center">
       <span class="eyebrow">Failure modes</span>
-      <h2 class="section-title">Five ways a counterfactual edit goes wrong</h2>
-      <p class="section-lead">Every CoBe item is graded against five error types. Each tab shows a real failure
-        from a benchmarked model, with the criteria and why the edit is invalid.</p>
+      <h2 class="section-title">Seven ways a counterfactual edit goes wrong</h2>
+      <p class="section-lead">Every response faces the same three checks, but the failures fall into recurring
+        patterns. Each tab shows an example from the paper's appendix with its evaluation criteria and the
+        authors' reasoning.</p>
     </div>
 
     <div class="error-tabs reveal-up" id="error-tabs"></div>
@@ -389,21 +721,9 @@
   </div>
 </section>
 
-<!-- ============================ GRAPH TYPES ======================== -->
-<section class="section is-soft" id="graphs">
-  <div class="container">
-    <div class="reveal-up section-head-center">
-      <span class="eyebrow">Causal structure</span>
-      <h2 class="section-title">Six families of causal graphs</h2>
-      <p class="section-lead">Unlike prior datasets, CoBe varies the causal structure connecting events in each
-        scenario — so a model must propagate effects correctly, not just pattern-match.</p>
-    </div>
-    <div class="graph-gallery reveal-up" id="graph-gallery"></div>
-  </div>
-</section>
-
 <!-- ============================== SOCIAL =========================== -->
-<section class="section" id="buzz">
+<!-- Hidden for now: remove `hidden` from this section to reveal it (code and share buttons still work). -->
+<section class="section" id="buzz" hidden>
   <div class="container">
     <div class="reveal-up section-head-center">
       <span class="eyebrow">Community</span>
@@ -430,7 +750,7 @@
 
     <div class="share-cta reveal-up">
       <h3>Help spread the word</h3>
-      <p>Think your model can beat 54%? Share CoBe and challenge the community.</p>
+      <p>Think your model can beat 61%? Share CoBe and challenge the community.</p>
       <div class="share-row">
         <button class="share-btn" id="share-x"><i class="fab fa-x-twitter"></i> Post on X</button>
         <button class="share-btn" id="share-linkedin"><i class="fab fa-linkedin-in"></i> LinkedIn</button>
@@ -442,7 +762,7 @@
 </section>
 
 <!-- ============================== CITATION ========================= -->
-<section class="section is-soft" id="cite">
+<section class="section" id="cite">
   <div class="container is-narrow">
     <div class="reveal-up section-head-center">
       <span class="eyebrow">Citation</span>
@@ -453,11 +773,11 @@
       <!-- TODO: replace "Anonymous Author(s)" and finalize the venue/url once the paper is published. -->
       <button class="btn btn-light btn-sm cite-copy" id="cite-copy">Copy</button>
       <pre class="cite-block" id="cite-block">@inproceedings{cobe2026,
-  title     = {CoBe: Counterfactual Benchmark for Text Editing},
+  title     = {CoBe: A Benchmark for Conversational Counterfactual
+               Text Editing},
   author    = {Anonymous Author(s)},
-  booktitle = {Submitted to the 40th Conference on Neural Information
-               Processing Systems (NeurIPS 2026), Datasets and
-               Benchmarks Track},
+  booktitle = {Submitted to the Fifteenth International Conference
+               on Learning Representations (ICLR 2027)},
   year      = {2026},
   note      = {Under review},
   url       = {https://cobe-benchmark.github.io}
@@ -470,38 +790,39 @@
 <footer class="site-footer">
   <div class="container">
     <div class="footer-links">
-      <a href="https://github.com/cobe-benchmark/counterfactual-reasoning-benchmark"><i class="fab fa-github"></i> Code</a>
-      <a href="https://huggingface.co/datasets/cobe-team/counterfactual-reasoning-benchmark"><i class="fas fa-database"></i> Dataset</a>
+      <!-- Hidden until the code repo is public: remove `hidden` to reveal. -->
+      <a href="https://github.com/cobe-benchmark/counterfactual-reasoning-benchmark" hidden><i class="fab fa-github"></i> Code</a>
+      <a href="https://kaggle.com/datasets/5ae0d5bcf4d8f3ed1af4aae45466f2b49d4b21a3d40783980a2bd3b315437204"><i class="fas fa-database"></i> Dataset sample</a>
       <a href="#tryit"><i class="fas fa-flask"></i> Try it</a>
       <a href="#leaderboard"><i class="fas fa-trophy"></i> Leaderboard</a>
     </div>
-    <p>CoBe — Counterfactual Benchmark for Text Editing.</p>
+    <p>CoBe — A Benchmark for Conversational Counterfactual Text Editing.</p>
     <p>Website template adapted from Nerfies · Licensed under CC BY-SA 4.0.</p>
   </div>
 </footer>
 
 <!-- Chart + interactive modules -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-<script src="./static/js/graph-type-diagrams.js"></script>
-<script src="./static/js/category-examples.js"></script>
-<script src="./static/js/results-chart.js"></script>
-<script src="./static/js/leaderboard.js"></script>
-<script src="./static/js/try-it.js"></script>
-<script src="./static/js/failure-modes.js"></script>
-<script src="./static/js/site.js"></script>
+<script src="./static/js/graph-type-diagrams.js?v=20261003"></script>
+<script src="./static/js/category-examples.js?v=20261003"></script>
+<script src="./static/js/results-chart.js?v=20261003"></script>
+<script src="./static/js/leaderboard.js?v=20261003"></script>
+<script src="./static/js/try-it.js?v=20261003"></script>
+<script src="./static/js/failure-modes.js?v=20261003"></script>
+<script src="./static/js/site.js?v=20261003"></script>
 
-<!-- Populate the causal-graph gallery from the diagram generator -->
+<!-- Populate the causal-graph gallery from the diagram generator (shares are from the paper, Table 4) -->
 <script>
   (function () {
     var gallery = document.getElementById('graph-gallery');
     if (!gallery || typeof GraphTypeDiagrams === 'undefined') return;
     var GRAPHS = [
-      { key: 'Chain-like',    pct: '50.6%', desc: 'A → B → C: effects pass straight down the line.' },
-      { key: 'Collider-like', pct: '23.9%', desc: 'A → B ← C: two causes meet at one effect.' },
-      { key: 'Hydrid',        pct: '11.1%', desc: 'Mixed structure combining several motifs.' },
-      { key: 'Fork-like',     pct: '5.7%',  desc: 'A ← B → C: one cause, two branches.' },
-      { key: 'Correlated',    pct: '4.8%',  desc: 'A ⇠⇢ B: associated, with no direct cause.' },
-      { key: 'Diamond-like',  pct: '3.8%',  desc: 'A → B,C → D: effects split then reconverge.' }
+      { key: 'Chain-like',    pct: '51.0%', desc: 'A → B → C: effects pass straight down the line.' },
+      { key: 'Collider-like', pct: '21.9%', desc: 'A → B ← C: two causes meet at one effect.' },
+      { key: 'Hydrid',        pct: '11.9%', desc: 'Mixed structure combining several motifs.' },
+      { key: 'Correlated',    pct: '5.7%',  desc: 'A ⇠⇢ B: associated, with no direct cause.' },
+      { key: 'Fork-like',     pct: '4.8%',  desc: 'A ← B → C: one cause, two branches.' },
+      { key: 'Diamond-like',  pct: '4.5%',  desc: 'A → B,C → D: effects split then reconverge.' }
     ];
     var names = { 'Chain-like': 'Chain', 'Collider-like': 'Collider', 'Hydrid': 'Hybrid',
                   'Fork-like': 'Fork', 'Correlated': 'Correlated', 'Diamond-like': 'Diamond' };

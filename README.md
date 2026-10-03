@@ -1,20 +1,20 @@
-# CoBe — Counterfactual Benchmark for Text Editing (project website)
+# CoBe — A Benchmark for Conversational Counterfactual Text Editing (project website)
 
 Source for the **CoBe** project website, published with GitHub Pages at
 **<https://cobe-benchmark.github.io>**.
 
-CoBe is a benchmark for *counterfactual text editing* — rewriting a story to reflect a hypothetical
-"what if" while respecting the causal structure of the scene. The site presents the paper's results
-and lets anyone test their own model on real benchmark scenarios.
+CoBe is a benchmark for *conversational counterfactual text editing* — revising a story in light of a
+"what would have happened if…" request while keeping fixed everything the change does not causally
+affect. The site presents the paper's results and lets anyone test their own model on real benchmark
+scenarios.
 
-**Related:** [benchmark code](https://github.com/cobe-benchmark/counterfactual-reasoning-benchmark) ·
-[dataset (Hugging Face)](https://huggingface.co/datasets/cobe-team/counterfactual-reasoning-benchmark) ·
+**Related:** [public dataset sample (Kaggle, 200 scenarios)](https://kaggle.com/datasets/5ae0d5bcf4d8f3ed1af4aae45466f2b49d4b21a3d40783980a2bd3b315437204) ·
 [live site](https://cobe-benchmark.github.io)
 
-> The accompanying paper is **under review at the NeurIPS 2026 Datasets & Benchmarks Track** and is
-> currently anonymous. The author names and paper link in `index.html` are intentionally left as
-> placeholders — search for `TODO` (or the literal text `Anonymous`) to find every spot to fill in
-> before de-anonymization.
+> The accompanying paper is **under review at ICLR 2027** and the site is kept anonymous. The author
+> names and paper link in `index.html` are intentionally left as placeholders — search for `TODO` (or
+> the literal text `Anonymous`) to find every spot to fill in before de-anonymization. See
+> [Hidden sections and switches](#hidden-sections-and-switches) for content that is built but not shown.
 
 ---
 
@@ -74,9 +74,10 @@ There is nothing to compile and no dependencies to install — edit a file and r
 .
 ├── index.html                      # the entire page (all sections live here)
 ├── README.md
-├── eval-results/                   # pre-generated data the page fetches at runtime
-│   ├── eval-statistics.json        #   accuracy: overall / by_domain / by_graph
-│   └── category-examples.json      #   representative scenarios + model outputs per category
+├── eval-results/                   # data the page fetches at runtime
+│   ├── paper-results.json          #   numbers from the current paper (leaderboard + results chart)
+│   ├── eval-statistics.json        #   earlier (June 2026) run: overall / by_domain / by_graph (legacy)
+│   └── category-examples.json      #   scenarios + criteria (+ earlier-run model outputs) for Try it
 └── static/
     ├── css/
     │   ├── index.css               # design system + all section styles (main stylesheet)
@@ -85,12 +86,12 @@ There is nothing to compile and no dependencies to install — edit a file and r
     │   ├── graph-type-diagram.css  # causal-graph hover popover
     │   └── bulma*.css, fontawesome.all.min.css, bulma.css.map.txt   # legacy / unused (see below)
     └── js/
-        ├── results-chart.js        # Chart.js bar chart (aggregated / domain / graph views)
+        ├── results-chart.js        # Chart.js bar chart (overall / graph / phrasing / error type / failure pattern)
         ├── category-examples.js    # expandable examples when a chart bar is clicked
         ├── graph-type-diagrams.js  # SVG generator for the 6 causal-graph families
         ├── leaderboard.js          # sortable / filterable leaderboard table
         ├── try-it.js               # "Try it yourself" — test your own model
-        ├── failure-modes.js        # the 5 error types + curated examples
+        ├── failure-modes.js        # the 7 failure patterns (paper App. C) + worked examples (App. B.1)
         ├── site.js                 # nav, share buttons, copy-to-clipboard, scroll reveal
         └── bulma*.js, fontawesome.all.min.js, index.js   # legacy / unused (see below)
 ```
@@ -106,59 +107,66 @@ churning git history.
 
 ## How the page gets its data
 
-All numbers shown on the site come from two JSON files in `eval-results/`, fetched at runtime. They are
-**pre-generated artifacts**; the script that produces them lives in the separate
-[benchmark code repo](https://github.com/cobe-benchmark/counterfactual-reasoning-benchmark), not here.
-To refresh the site's numbers, regenerate those JSON files there and drop the new versions into
-`eval-results/`.
+The page fetches JSON from `eval-results/` at runtime.
 
-<details>
-<summary><code>eval-results/eval-statistics.json</code> (schema)</summary>
+**`eval-results/paper-results.json`: the current paper's numbers.** This file drives the leaderboard
+and the *Explore* chart. It was transcribed from the ICLR 2027 draft:
 
-```jsonc
-{
-  "generated_at": "…",
-  "source":      { … },   // provenance of the inputs the stats were derived from
-  "notes":       { "accuracy": "correct / (correct + wrong); unknown excluded", … },
-  "summary":     { "files_processed": …, … },   // generation bookkeeping
-  "models":      ["claude", "gemini", "gemma-27b", "gpt", …],   // 9 ids (order not significant)
-  "domains":     ["Health and Medicine", "Engineering", …],     // 7
-  "graph_types": ["Chain-like", "Collider-like", …],            // 6
-  "overall":   { "gpt": { "correct": 3831, "wrong": 3047, "unknown": 247, "total": 7125, "accuracy": 0.557 }, … },
-  "by_domain": { "Health and Medicine": { "gpt": { …same shape… }, … }, … },
-  "by_graph":  { "Chain-like":         { "gpt": { …same shape… }, … }, … }
-}
-```
-Accuracy = `correct / (correct + wrong)`; `unknown` outcomes are excluded from the denominator (the file
-states this same formula in `notes.accuracy`). Consumed by `results-chart.js` and `leaderboard.js`.
-</details>
+| Key | Source in the paper | Used by |
+|---|---|---|
+| `overall` | Table 5 (accuracy averaged over the three query phrasings, `std` across phrasings) | leaderboard, chart "Overall" |
+| `by_graph` | Fig. 7 (accuracy by causal graph type) | chart "Graph type" |
+| `by_query` | Fig. 8 (accuracy by query phrasing A/B/C) | chart "Query phrasing" |
+| `by_criterion` | Fig. 6 (failure rate per evaluation criterion; lower is better) | chart "Error type" |
+| `by_failure_mode` | Fig. 9 (accuracy by qualitative failure pattern i–vii, App. C) | chart "Failure pattern" |
 
-<details>
-<summary><code>eval-results/category-examples.json</code> (schema)</summary>
+The paper prints exact values only for Table 5. The figure-based buckets were read from the bar heights
+in the PDF's vector figures and rounded to 0.1. As a sanity check, averaging `by_query` reproduces
+Table 5 to within 0.05. When the paper's figures change, regenerate these values, ideally from the raw
+results in the benchmark code repo. All values are percentages.
 
 ```jsonc
 {
-  "generated_at": "…",
-  "examples_per_category": 10,
-  "models": ["gpt", "gemini", "claude", …],   // ids that may appear in each item's model_outputs
-  "by_domain": {
-    "Health and Medicine": [
-      {
-        "example_id": "102v17", "coreset_id": 102, "variation_id": 17, "query_idx": 2,
-        "original":    "…the original scenario…",
-        "query":       "…the counterfactual edit request…",
-        "gold_answer": "…a representative valid edit…",
-        "should_not_change": ["…events that must stay fixed…"],
-        "should_change":     ["…events causally downstream of the edit…"],
-        "model_outputs": { "gpt": { "response": "…", "verdict": "correct|wrong|unknown" }, … }
-      }, …
-    ], …
+  "models":  ["gpt", "gemini", "claude", …],                 // ids, see "Adding or renaming a model"
+  "overall": { "gpt": { "accuracy": 61.34, "std": 0.45 }, … },
+  "by_graph": {
+    "metric": "accuracy",                                     // or "failure_rate" (by_criterion)
+    "categories": ["Chain-like", …],                          // display order; labels live in results-chart.js
+    "values": { "Chain-like": { "gpt": 63.5, … }, … }
   },
-  "by_graph": { "Chain-like": [ …same item shape… ], … }
+  "by_query": { … }, "by_criterion": { … }, "by_failure_mode": { … }   // same shape
 }
 ```
-Consumed by `category-examples.js` (chart explorer) and `try-it.js` (the demo uses `by_domain`).
-</details>
+
+The prompt-ablation table (paper Table 7) and the dataset statistics are static HTML in `index.html`.
+
+**Legacy files from an earlier (June 2026) evaluation run.** These predate the current paper: different
+numbers, an older 7-domain taxonomy, and a different judge.
+
+- `eval-statistics.json` (`overall` / `by_domain` / `by_graph`, with `correct`/`wrong`/`unknown` counts).
+  It is no longer displayed. `results-chart.js` can show its per-domain view again via `SHOW_LEGACY_VIEWS`.
+- `category-examples.json`: 10 scenarios per old domain/graph category, each with
+  `original`, `query`, `gold_answer`, `should_not_change`, `should_change` and per-model `model_outputs`
+  (`response` + `verdict`).
+  - *Try it yourself* uses `by_domain` for its scenarios and criteria. The old domain names appear as
+    "Topic", and the per-model verdict chips are switched off via `SHOW_MODEL_VERDICTS` in `try-it.js`.
+  - The click-a-label example explorer (`category-examples.js`) is switched off with the legacy views.
+
+---
+
+## Hidden sections and switches
+
+These pieces are built and kept in the code but hidden on purpose. To bring one back:
+
+| What | Where | How to reveal |
+|---|---|---|
+| Community / "Buzz" section + share buttons | `<section id="buzz" hidden>` in `index.html` | remove `hidden` |
+| Code (GitHub) button, footer link, "Want to be listed?" note | `index.html` (search for "remove `hidden`") | remove `hidden` once the repo is public |
+| Per-model ✓/✗ chips in *Try it* | `SHOW_MODEL_VERDICTS` in `static/js/try-it.js` | set `true` (only once the data matches the paper) |
+| Per-domain chart view + click-for-examples panel | `SHOW_LEGACY_VIEWS` in `static/js/results-chart.js` | set `true` (only once the data matches the paper) |
+
+The global CSS rule `[hidden] { display: none !important; }` (end of `index.css`) makes `hidden` win over
+classes such as `.btn` that set `display`.
 
 ---
 
@@ -168,13 +176,17 @@ Consumed by `category-examples.js` (chart explorer) and `try-it.js` (the demo us
 |---|---|
 | News / updates timeline | the `#news` `<ul class="timeline">` in `index.html` (add newest at top) |
 | Hero text, stats, author/venue, paper link | the `<header class="hero">` block in `index.html` |
-| Social "Buzz" cards & share text | the `#buzz` section in `index.html`; share URLs/text in `static/js/site.js` |
+| Findings cards, task/ladder, healthcare example | `#findings` and `#task` in `index.html` |
+| Construction pipeline, dataset stats, domains, audit, scoring, prior-work table | `#benchmark` in `index.html` |
+| Prompt-ablation table (paper Table 7) | `#ablations` in `index.html` |
+| Social "Buzz" cards & share text (hidden) | the `#buzz` section in `index.html`; share URLs/text in `static/js/site.js` |
 | Leaderboard model names / org / params | the `MODEL_META` map in `static/js/leaderboard.js` |
-| The 5 error-type examples | the `ERRORS` array in `static/js/failure-modes.js` |
+| Chart views, captions, category labels | `VIEWS` and `CATEGORY_LINES` in `static/js/results-chart.js` |
+| The 7 failure patterns + examples | the `ERRORS` array in `static/js/failure-modes.js` |
 | Causal-graph cards (labels / % / blurbs) | the inline `<script>` near the bottom of `index.html` |
 | Colors, fonts, spacing | the CSS custom properties in `:root` at the top of `static/css/index.css` |
 | Citation / BibTeX | the `#cite` block in `index.html` |
-| Reported numbers | regenerate and replace the files in `eval-results/` (see above) |
+| Reported numbers | `eval-results/paper-results.json` (see above) |
 
 ### Adding or renaming a model
 
@@ -182,14 +194,14 @@ Consumed by `category-examples.js` (chart explorer) and `try-it.js` (the demo us
 missing from a file's local map is **silently dropped** from that section (no error). To add or rename a
 model, keep all of these in sync for the same model id:
 
-1. **Data** — `eval-results/eval-statistics.json` (`overall` / `by_domain` / `by_graph`) and
-   `eval-results/category-examples.json` (`model_outputs`).
+1. **Data** — `eval-results/paper-results.json` (`models`, `overall` and every `values` bucket); the legacy
+   `eval-statistics.json` / `category-examples.json` only matter if the legacy switches are turned on.
 2. **Leaderboard** — `MODEL_META` in `static/js/leaderboard.js` (label, org, type, params). *An id not in
    `MODEL_META` won't appear in the leaderboard.*
 3. **Results chart** — `MODEL_ORDER`, `MODEL_LABELS`, `MODEL_COLORS` in `static/js/results-chart.js`. *An
    id not in `MODEL_ORDER` won't appear in the chart.*
 4. **Try-it demo** — `MODEL_ORDER`, `MODEL_LABELS` in `static/js/try-it.js` (used for the per-model
-   verdict chips).
+   verdict chips, currently hidden).
 
 The **display label** for a given id must match across `leaderboard.js`, `results-chart.js` and
 `try-it.js`, or the same model will show up under different names in different sections.
@@ -205,8 +217,8 @@ There is no automated test suite (it's a static site). Verify changes manually:
 
 ```bash
 for p in / static/css/index.css static/js/leaderboard.js static/js/try-it.js \
-         static/js/failure-modes.js static/js/site.js \
-         eval-results/eval-statistics.json eval-results/category-examples.json; do
+         static/js/failure-modes.js static/js/results-chart.js static/js/site.js \
+         eval-results/paper-results.json eval-results/category-examples.json; do
   printf '%s -> %s\n' "$p" "$(curl -s -o /dev/null -w '%{http_code}' "http://localhost:8000/$p")"
 done   # every line should end in 200
 ```
@@ -237,12 +249,16 @@ open /tmp/cobe.png   # macOS; use xdg-open on Linux
 
 **3. Manual smoke checklist** (in a real browser):
 
-- Leaderboard fills with 9 models; sorting columns and the All/Proprietary/Open filters work.
-- Results chart renders; the **Aggregated / Domain / Graph** toggle switches views; clicking a bar in a
-  grouped view opens the examples panel; hovering a graph-type label shows its diagram.
-- **Try it yourself**: changing the domain loads new scenarios; **Copy prompt** copies; **Reveal**
-  shows criteria, a representative answer, and per-model verdicts.
-- Error-type tabs switch the example; the causal-graph gallery shows 6 SVG diagrams.
+- Leaderboard fills with 9 models (values = paper Table 5, with ±); sorting and the All/Proprietary/Open
+  filters work.
+- Results chart renders; the **Overall / Graph type / Query phrasing / Error type / Failure pattern**
+  toggle switches views and updates the caption; "Overall" shows ± whiskers; hovering a graph-type label
+  shows its diagram.
+- **Try it yourself**: changing the topic loads new scenarios; **Copy prompt** copies just the story +
+  request; **Reveal** shows the criteria and an illustrative answer (no verdict chips while hidden).
+- Failure-pattern tabs (i–vii + a valid example) switch the example; the causal-graph gallery shows 6 SVG
+  diagrams.
+- The Community section and Code links are not visible.
 - Mobile: the hamburger menu opens/closes; share/copy buttons work; nothing overflows horizontally.
 
 > **Gotcha — headless Chrome enforces a ~500px minimum layout viewport.** A `--window-size=390,…`

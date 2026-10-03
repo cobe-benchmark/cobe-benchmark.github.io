@@ -1,10 +1,19 @@
 /**
- * Interactive accuracy chart — loads eval-results/eval-statistics.json
+ * Interactive results chart — the paper's numbers, sliced by causal graph type,
+ * query phrasing, evaluation criterion and qualitative failure pattern.
+ * Reads eval-results/paper-results.json (values from the ICLR 2027 draft).
  */
 (function () {
   'use strict';
 
-  const STATS_URL = './eval-results/eval-statistics.json';
+  const DATA_URL = './eval-results/paper-results.json';
+
+  // The earlier (June 2026) evaluation run in eval-statistics.json /
+  // category-examples.json predates the current paper: different numbers and an
+  // older domain taxonomy. Its per-domain view and the click-a-label example
+  // explorer are kept but switched off; set to true to bring them back.
+  const SHOW_LEGACY_VIEWS = false;
+  const LEGACY_STATS_URL = './eval-results/eval-statistics.json';
 
   /** Fixed display order and colors (matches paper figures). */
   const MODEL_ORDER = [
@@ -43,18 +52,108 @@
     'llama3-70b': '#bcbd22',
   };
 
-  const VIEWS = {
-    aggregated: { label: 'Aggregated', key: 'overall' },
-    domain: { label: 'Domain Category', key: 'by_domain' },
-    graph: { label: 'Graph Type', key: 'by_graph' },
+  /** X-axis label lines per category key (Chart.js ignores \n in default ticks). */
+  const CATEGORY_LINES = {
+    // Graph types. The data keeps the paper's "Hydrid" key, which the diagram module also uses.
+    'Chain-like': ['Chain-like'],
+    'Collider-like': ['Collider-like'],
+    Correlated: ['Correlated'],
+    'Diamond-like': ['Diamond-like'],
+    'Fork-like': ['Fork-like'],
+    Hydrid: ['Hybrid'],
+    // Query phrasings (Sec. 3).
+    A: ['A', 'Rewrite the original text…'],
+    B: ['B', 'Based on the preceding text…'],
+    C: ['C', 'Rewrite the above passage…'],
+    // Evaluation criteria (Fig. 6).
+    upstream: ['Edits unaffected', 'facts (E1)'],
+    downstream: ['Misses required', 'changes (E2)'],
+    connectors: ['Wrong', 'connectors'],
+    numeric: ['Numeric', 'direction'],
+    latent: ['Latent', 'factors'],
+    // Qualitative failure patterns (App. C, Fig. 9).
+    i: ['(i) Unchanged', 'reason'],
+    ii: ['(ii) Background', 'rationalized'],
+    iii: ['(iii) Stale', 'consequence'],
+    iv: ['(iv) Physical /', 'quantitative'],
+    v: ['(v) Spatial', 'consequence'],
+    vi: ['(vi) Unsupported', 'connector'],
+    vii: ['(vii) Historical', 'fact changed'],
+    // Legacy domain taxonomy (earlier run).
+    'Health and Medicine': ['Health and', 'Medicine'],
+    Engineering: ['Engineering'],
+    'History, Geography and Agriculture': ['History, Geography', 'and Agriculture'],
+    'Economics and Finance': ['Economics and', 'Finance'],
+    'Arts, Music and Entertainment': ['Arts, Music', 'and Entertainment'],
+    'Science and Technology': ['Science and', 'Technology'],
+    'Human Activities and Behavior': ['Human Activities', 'and Behavior'],
   };
 
-  let stats = null;
+  const VIEWS = [
+    {
+      id: 'aggregated',
+      label: 'Overall',
+      caption:
+        'Accuracy averaged across the three query phrasings (Table 5); whiskers show ± one standard ' +
+        'deviation across phrasings. A response counts as correct only if it passes every check.',
+    },
+    {
+      id: 'graph',
+      label: 'Graph type',
+      key: 'by_graph',
+      axisTitle: 'Causal graph type',
+      caption:
+        'Accuracy by the causal structure behind each story (Fig. 7). Correlated graphs are the hardest for almost ' +
+        'every model, which read correlation as causation; diamond-like graphs, and to a lesser extent fork-like ' +
+        'and hybrid ones, also trail. Hover a label to see its graph.',
+    },
+    {
+      id: 'query',
+      label: 'Query phrasing',
+      key: 'by_query',
+      axisTitle: 'Query phrasing',
+      caption:
+        'Accuracy for each of the three conversational phrasings of the same request (Fig. 8). The differences ' +
+        'are small, so the failures are not an artifact of one wording.',
+    },
+    {
+      id: 'criterion',
+      label: 'Error type',
+      key: 'by_criterion',
+      axisTitle: 'Evaluation criterion',
+      caption:
+        'Failure rate per evaluation criterion (Fig. 6), so lower is better. Of the three checks, editing facts that ' +
+        'should stay fixed (E1) is the most common failure for every model. “Numeric direction” and “latent factors” ' +
+        'are sub-types: a wrong direction for a numerical change, and a hidden background factor not kept invariant.',
+    },
+    {
+      id: 'mode',
+      label: 'Failure pattern',
+      key: 'by_failure_mode',
+      axisTitle: 'Qualitative failure pattern',
+      caption:
+        'Accuracy across the fine-grained failure modes defined in App. C (Fig. 9); see the error-type ' +
+        'explorer below for a worked example of each. On average, rationalized background facts (ii) and ' +
+        'physical or quantitative constraints (iv) are the hardest.',
+    },
+    {
+      id: 'domain',
+      label: 'Domain (earlier run)',
+      key: 'by_domain',
+      legacy: true,
+      axisTitle: 'Domain category',
+      caption: 'Accuracy by domain from an earlier evaluation run that predates the current paper.',
+    },
+  ].filter((v) => SHOW_LEGACY_VIEWS || !v.legacy);
+
+  let data = null;
+  let legacy = null;
   let chart = null;
   let currentView = 'aggregated';
 
   const canvas = document.getElementById('results-chart');
   const legendEl = document.getElementById('results-legend');
+  const captionEl = document.getElementById('results-caption');
   const toggleRoot = document.getElementById('results-view-toggle');
   const loadingEl = document.getElementById('results-chart-loading');
   const errorEl = document.getElementById('results-chart-error');
@@ -68,10 +167,12 @@
     return MODEL_LABELS[id] || id;
   }
 
-  function accuracyPercent(bucket, modelId) {
-    const row = bucket[modelId];
-    if (!row || row.accuracy == null) return null;
-    return row.accuracy * 100;
+  function categoryLines(key) {
+    return CATEGORY_LINES[key] || [key];
+  }
+
+  function viewById(id) {
+    return VIEWS.find((v) => v.id === id);
   }
 
   function orderedModels(available) {
@@ -79,9 +180,45 @@
     return MODEL_ORDER.filter((m) => set.has(m));
   }
 
+  /** Bucket of { metric, categories, values: { category: { model: pct } } } for a grouped view. */
+  function bucketFor(view) {
+    if (!view || !view.key) return null;
+    const source = view.legacy ? legacy : data;
+    return source ? source[view.key] || null : null;
+  }
+
+  function isFailureMetric(view) {
+    const bucket = bucketFor(view);
+    return !!bucket && bucket.metric === 'failure_rate';
+  }
+
+  /** Example explorer (category-examples.js) only has items for the earlier run. */
+  function examplesEnabled(view) {
+    return (
+      SHOW_LEGACY_VIEWS &&
+      typeof CategoryExamples !== 'undefined' &&
+      !!view &&
+      (view.key === 'by_domain' || view.key === 'by_graph')
+    );
+  }
+
+  /** Converts the legacy eval-statistics.json layout into the grouped-bucket shape. */
+  function legacyBucket(stats, groupKey, categoryList) {
+    const values = {};
+    categoryList.forEach((cat) => {
+      const row = stats[groupKey][cat];
+      if (!row) return;
+      values[cat] = {};
+      Object.keys(row).forEach((m) => {
+        if (row[m] && row[m].accuracy != null) values[cat][m] = row[m].accuracy * 100;
+      });
+    });
+    return { metric: 'accuracy', categories: Object.keys(values), values };
+  }
+
   function buildToggleButtons() {
     toggleRoot.innerHTML = '';
-    Object.entries(VIEWS).forEach(([id, { label }]) => {
+    VIEWS.forEach(({ id, label }) => {
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'toggle-btn' + (id === currentView ? ' is-active' : '');
@@ -93,7 +230,7 @@
   }
 
   function setView(viewId) {
-    if (!stats || viewId === currentView) return;
+    if (!data || viewId === currentView) return;
     currentView = viewId;
     hideGraphPopover();
     if (typeof CategoryExamples !== 'undefined') {
@@ -157,7 +294,7 @@
     }
 
     if (graphPopover.dataset.graphType !== graphType) {
-      graphPopoverTitle.textContent = graphType;
+      graphPopoverTitle.textContent = categoryLines(graphType).join(' ');
       graphPopoverBody.innerHTML = svg;
       graphPopover.dataset.graphType = graphType;
     }
@@ -165,26 +302,13 @@
     positionGraphPopover(event);
   }
 
-  function groupedExamplesKey() {
-    if (currentView === 'domain') return 'by_domain';
-    if (currentView === 'graph') return 'by_graph';
-    return null;
-  }
-
   function groupedRawLabels() {
-    if (!stats) return [];
-    if (currentView === 'domain') {
-      return stats.domains.filter((cat) => stats.by_domain[cat]);
-    }
-    if (currentView === 'graph') {
-      return stats.graph_types.filter((cat) => stats.by_graph[cat]);
-    }
-    return [];
+    const bucket = bucketFor(viewById(currentView));
+    return bucket ? bucket.categories.filter((cat) => bucket.values[cat]) : [];
   }
 
   function groupedLabelIndexAtEvent(event) {
-    if (!chart || !stats) return -1;
-    if (currentView !== 'domain' && currentView !== 'graph') return -1;
+    if (!chart || currentView === 'aggregated') return -1;
 
     const pos = Chart.helpers.getRelativePosition(event, chart);
     const scale = chart.scales.x;
@@ -228,12 +352,10 @@
 
   function updateGroupedLabelCursor(event) {
     if (!canvas) return;
-    if (currentView === 'domain' || currentView === 'graph') {
-      const index = groupedLabelIndexAtEvent(event);
-      canvas.style.cursor = index >= 0 ? 'pointer' : 'default';
-    } else {
-      canvas.style.cursor = 'default';
-    }
+    const view = viewById(currentView);
+    const interactive = examplesEnabled(view) || view.id === 'graph';
+    const index = interactive ? groupedLabelIndexAtEvent(event) : -1;
+    canvas.style.cursor = index >= 0 && examplesEnabled(view) ? 'pointer' : 'default';
   }
 
   function onChartMouseMove(event) {
@@ -267,26 +389,24 @@
   }
 
   function onChartClick(event) {
-    if (currentView !== 'domain' && currentView !== 'graph') return;
-    if (typeof CategoryExamples === 'undefined') return;
+    const view = viewById(currentView);
+    if (!examplesEnabled(view)) return;
 
     const index = groupedLabelIndexAtEvent(event);
     if (index < 0) return;
 
     hideGraphPopover();
 
-    const rawLabels = groupedRawLabels();
-    const categoryName = rawLabels[index];
-    const groupKey = groupedExamplesKey();
-    if (categoryName && groupKey) {
-      CategoryExamples.show(groupKey, categoryName);
+    const categoryName = groupedRawLabels()[index];
+    if (categoryName) {
+      CategoryExamples.show(view.key, categoryName);
     }
   }
 
   function setupChartInteraction() {
     if (!canvas) return;
 
-    const grouped = currentView === 'domain' || currentView === 'graph';
+    const grouped = currentView !== 'aggregated';
     canvas.onmousemove = grouped ? onChartMouseMove : null;
     canvas.onmouseleave = grouped
       ? () => {
@@ -320,58 +440,27 @@
   const GRAPH_LABEL_HIT_PAD_X = 6;
   const GRAPH_LABEL_HIT_PAD_Y = 4;
 
-  /** Bottom layout padding for domain-style x-axis (keeps 0–100% plot height consistent). */
-  function domainStyleBottomPadding() {
-    if (!stats) {
-      return (
-        GROUPED_LABEL_GAP_AXIS +
-        2 * MULTILINE_LINE_HEIGHT +
-        GROUPED_LABEL_GAP_TITLE +
-        AXIS_TITLE_FONT.size +
-        GROUPED_LABEL_EXTRA_BOTTOM
-      );
-    }
-    const domainLabels = stats.domains
-      .filter((cat) => stats.by_domain[cat])
-      .map(formatGroupedLabel);
-    const labelLineCount = maxLabelLines(domainLabels);
+  /** Bottom padding sized for the tallest label set, so the 0–100% plot height stays put across views. */
+  function bottomPadding() {
+    let lineCount = 1;
+    VIEWS.forEach((view) => {
+      const bucket = bucketFor(view);
+      if (!bucket) return;
+      bucket.categories.forEach((cat) => {
+        lineCount = Math.max(lineCount, categoryLines(cat).length);
+      });
+    });
     return (
       GROUPED_LABEL_GAP_AXIS +
-      labelLineCount * MULTILINE_LINE_HEIGHT +
+      lineCount * MULTILINE_LINE_HEIGHT +
       GROUPED_LABEL_GAP_TITLE +
       AXIS_TITLE_FONT.size +
       GROUPED_LABEL_EXTRA_BOTTOM
     );
   }
 
-  /** Line breaks for grouped x-axis labels (Chart.js ignores \\n in default ticks). */
-  const GROUPED_LABEL_LINES = {
-    'Health and Medicine': ['Health and', 'Medicine'],
-    Engineering: ['Engineering'],
-    'History, Geography and Agriculture': ['History, Geography', 'and Agriculture'],
-    'Economics and Finance': ['Economics and', 'Finance'],
-    'Arts, Music and Entertainment': ['Arts, Music', 'and Entertainment'],
-    'Science and Technology': ['Science and', 'Technology'],
-    'Human Activities and Behavior': ['Human Activities', 'and Behavior'],
-    'Chain-like': ['Chain-like'],
-    'Collider-like': ['Collider-like'],
-    Correlated: ['Correlated'],
-    'Diamond-like': ['Diamond-like'],
-    'Fork-like': ['Fork-like'],
-    Hydrid: ['Hydrid'],
-  };
-
-  function formatGroupedLabel(label) {
-    const lines = GROUPED_LABEL_LINES[label];
-    if (lines) return lines.join('\n');
-    if (label.includes(', ')) {
-      return label.split(', ').join(',\n');
-    }
-    const andIdx = label.indexOf(' and ');
-    if (andIdx > 0) {
-      return label.slice(0, andIdx) + '\nand' + label.slice(andIdx + 4);
-    }
-    return label;
+  function formatGroupedLabel(key) {
+    return categoryLines(key).join('\n');
   }
 
   function maxLabelLines(labels) {
@@ -445,41 +534,71 @@
     },
   };
 
+  /** ± whiskers on the aggregated bars (errors in the same units as the data). */
+  const errorBarsPlugin = {
+    id: 'errorBars',
+
+    afterDatasetsDraw(chart) {
+      const errors = chart.options.plugins?.errorBars?.errors;
+      if (!errors) return;
+
+      const yScale = chart.scales.y;
+      const values = chart.data.datasets[0].data;
+      const ctx = chart.ctx;
+
+      ctx.save();
+      ctx.strokeStyle = '#363636';
+      ctx.lineWidth = 1.5;
+      chart.getDatasetMeta(0).data.forEach((bar, i) => {
+        const err = errors[i];
+        const v = values[i];
+        if (err == null || v == null) return;
+        // Offset from the bar's (possibly animating) top so whiskers ride along with it.
+        const half = yScale.getPixelForValue(v) - yScale.getPixelForValue(v + err);
+        const cap = Math.min(7, bar.width / 4);
+        ctx.beginPath();
+        ctx.moveTo(bar.x, bar.y - half);
+        ctx.lineTo(bar.x, bar.y + half);
+        ctx.moveTo(bar.x - cap, bar.y - half);
+        ctx.lineTo(bar.x + cap, bar.y - half);
+        ctx.moveTo(bar.x - cap, bar.y + half);
+        ctx.lineTo(bar.x + cap, bar.y + half);
+        ctx.stroke();
+      });
+      ctx.restore();
+    },
+  };
+
   if (typeof Chart !== 'undefined') {
-    Chart.register(multilineXAxisPlugin);
+    Chart.register(multilineXAxisPlugin, errorBarsPlugin);
   }
 
-  function groupedXAxisTitle() {
-    if (currentView === 'domain') return 'Domain Category';
-    if (currentView === 'graph') return 'Graph Type';
-    return '';
-  }
-
-  function accuracyTooltipLabel(ctx) {
-    const v = ctx.parsed.y;
-    if (v == null) return 'N/A';
-    return ' ' + v.toFixed(1) + '%';
-  }
-
-  function groupedTooltipCallbacks() {
-    return {
-      title(items) {
-        return items[0]?.dataset?.label || '';
-      },
-      label: accuracyTooltipLabel,
+  function valueTooltipLabel(failure) {
+    return (ctx) => {
+      const v = ctx.parsed.y;
+      if (v == null) return 'N/A';
+      return ' ' + v.toFixed(1) + '%' + (failure ? ' failed' : '');
     };
   }
 
-  function tooltipOptions(groupedInteraction) {
+  function tooltipOptions(groupedInteraction, failure) {
     return {
       boxPadding: 1,
       callbacks: groupedInteraction
-        ? groupedTooltipCallbacks()
+        ? {
+            title(items) {
+              return items[0]?.dataset?.label || '';
+            },
+            label: valueTooltipLabel(failure),
+          }
         : {
             title(items) {
               return items[0]?.label || '';
             },
-            label: accuracyTooltipLabel,
+            label(ctx) {
+              const row = data.overall[orderedModels(data.models)[ctx.dataIndex]];
+              return ' ' + row.accuracy.toFixed(2) + '% ± ' + row.std.toFixed(2);
+            },
           },
     };
   }
@@ -503,6 +622,7 @@
   function chartOptions(opts) {
     const groupedInteraction = opts && opts.groupedInteraction;
     const axisTitle = (opts && opts.axisTitle) || '';
+    const failure = !!(opts && opts.failure);
 
     return {
       responsive: true,
@@ -512,7 +632,7 @@
         : { mode: 'index', intersect: false },
       layout: {
         padding: {
-          bottom: domainStyleBottomPadding(),
+          bottom: bottomPadding(),
           top: 4,
         },
       },
@@ -524,7 +644,8 @@
           tickColor: '#7a7a7a',
           axisTitle,
         },
-        tooltip: tooltipOptions(groupedInteraction),
+        errorBars: { errors: (opts && opts.errors) || null },
+        tooltip: tooltipOptions(groupedInteraction, failure),
       },
       scales: {
         y: {
@@ -532,7 +653,7 @@
           max: 100,
           title: {
             display: true,
-            text: 'Accuracy',
+            text: failure ? 'Failure rate (lower is better)' : 'Accuracy',
             font: AXIS_TITLE_FONT,
             padding: { bottom: 8 },
           },
@@ -555,13 +676,13 @@
             padding: 4,
           },
           grid: { display: false },
+          stacked: false,
         },
       },
     };
   }
 
   function aggregatedConfig(models) {
-    const values = models.map((m) => accuracyPercent(stats.overall, m));
     return {
       type: 'bar',
       data: {
@@ -569,7 +690,7 @@
         datasets: [
           {
             label: 'Accuracy',
-            data: values,
+            data: models.map((m) => data.overall[m].accuracy),
             backgroundColor: models.map((m) => MODEL_COLORS[m]),
             borderColor: models.map((m) => MODEL_COLORS[m]),
             borderWidth: 1,
@@ -578,19 +699,24 @@
           },
         ],
       },
-      options: chartOptions({ axisTitle: '', groupedInteraction: false }),
+      options: chartOptions({
+        axisTitle: '',
+        groupedInteraction: false,
+        errors: models.map((m) => data.overall[m].std),
+      }),
     };
   }
 
-  function groupedConfig(groupKey, categoryList) {
-    const bucket = stats[groupKey];
-    const models = orderedModels(stats.models);
-    const rawLabels = categoryList.filter((cat) => bucket[cat]);
-    const labels = rawLabels.map(formatGroupedLabel);
+  function groupedConfig(view, models) {
+    const bucket = bucketFor(view);
+    const rawLabels = bucket.categories.filter((cat) => bucket.values[cat]);
 
     const datasets = models.map((modelId) => ({
       label: modelLabel(modelId),
-      data: rawLabels.map((cat) => accuracyPercent(bucket[cat], modelId)),
+      data: rawLabels.map((cat) => {
+        const v = bucket.values[cat][modelId];
+        return v == null ? null : v;
+      }),
       backgroundColor: MODEL_COLORS[modelId],
       borderColor: MODEL_COLORS[modelId],
       borderWidth: 1,
@@ -600,11 +726,12 @@
 
     return {
       type: 'bar',
-      data: { labels, datasets },
+      data: { labels: rawLabels.map(formatGroupedLabel), datasets },
       options: {
         ...chartOptions({
-          axisTitle: groupedXAxisTitle(),
+          axisTitle: view.axisTitle,
           groupedInteraction: true,
+          failure: isFailureMetric(view),
         }),
         datasets: {
           bar: {
@@ -612,37 +739,20 @@
             barPercentage: 0.9,
           },
         },
-        scales: {
-          ...chartOptions({
-            axisTitle: groupedXAxisTitle(),
-            groupedInteraction: true,
-          }).scales,
-          x: {
-            ...chartOptions({
-              axisTitle: groupedXAxisTitle(),
-              groupedInteraction: true,
-            }).scales.x,
-            stacked: false,
-          },
-        },
       },
     };
   }
 
   function renderChart() {
-    if (!stats || !canvas) return;
+    if (!data || !canvas) return;
 
-    const models = orderedModels(stats.models);
+    const view = viewById(currentView);
+    const models = orderedModels(data.models);
     renderLegend(models);
+    if (captionEl) captionEl.textContent = view.caption || '';
 
-    let config;
-    if (currentView === 'aggregated') {
-      config = aggregatedConfig(models);
-    } else if (currentView === 'domain') {
-      config = groupedConfig('by_domain', stats.domains);
-    } else {
-      config = groupedConfig('by_graph', stats.graph_types);
-    }
+    const config =
+      view.id === 'aggregated' ? aggregatedConfig(models) : groupedConfig(view, models);
 
     if (chart) {
       chart.destroy();
@@ -666,27 +776,38 @@
     }
   }
 
+  function fetchJson(url) {
+    return fetch(url).then((res) => {
+      if (!res.ok) throw new Error('HTTP ' + res.status + ' for ' + url);
+      return res.json();
+    });
+  }
+
+  async function loadLegacy() {
+    const [stats] = await Promise.all([
+      fetchJson(LEGACY_STATS_URL),
+      typeof CategoryExamples !== 'undefined' ? CategoryExamples.load() : null,
+    ]);
+    legacy = {
+      by_domain: legacyBucket(stats, 'by_domain', stats.domains),
+      by_graph: legacyBucket(stats, 'by_graph', stats.graph_types),
+    };
+    if (typeof CategoryExamples !== 'undefined') {
+      CategoryExamples.configureModels(orderedModels(stats.models), modelLabel);
+    }
+  }
+
   async function init() {
     if (!canvas || !toggleRoot) return;
 
     buildToggleButtons();
 
     try {
-      const statsPromise = fetch(STATS_URL).then((res) => {
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        return res.json();
-      });
-      const examplesPromise =
-        typeof CategoryExamples !== 'undefined'
-          ? CategoryExamples.load()
-          : Promise.resolve(null);
-
-      const [statsJson] = await Promise.all([statsPromise, examplesPromise]);
-      stats = statsJson;
-
-      if (typeof CategoryExamples !== 'undefined') {
-        CategoryExamples.configureModels(orderedModels(stats.models), modelLabel);
-      }
+      const [paper] = await Promise.all([
+        fetchJson(DATA_URL),
+        SHOW_LEGACY_VIEWS ? loadLegacy() : null,
+      ]);
+      data = paper;
 
       showPanel();
       renderChart();

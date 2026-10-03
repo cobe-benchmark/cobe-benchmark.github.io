@@ -1,122 +1,217 @@
 /**
- * Failure-mode explorer — the five error types CoBe checks for, each with a
- * real, hand-picked example from the paper's appendix.
+ * Failure-mode explorer — the seven qualitative failure patterns from the
+ * paper (App. C), each with its worked example from App. B.1, plus one
+ * response marked correct despite offering several rewrites.
  */
 (function () {
   'use strict';
 
+  // The three scored checks (paper Sec. 3.1) that an example violates.
+  const CHECKS = {
+    preserve: 'Wrongly editing unaffected facts',
+    change: 'Failing to make required changes',
+    connector: 'Wrong connectors',
+  };
+
   const ERRORS = [
     {
-      key: 'upstream',
-      tab: 'Editing the wrong variable',
-      title: 'Editing events that are not downstream',
+      num: 'i',
+      tab: 'Unchanged reason',
+      title: 'Overlooking an unchanged reason for an action',
       desc:
-        'The model rewrites variables that the intervention should leave untouched — ' +
-        'usually because it mistakes an independent (or upstream) factor for a consequence of the edit.',
-      example: '311v26',
+        'A rewrite removes an action after changing one associated condition, even though the story ' +
+        'supplies another reason for the action that remains in place.',
+      check: 'preserve',
+      example: '403v1',
+      model: 'GPT-5.4-Pro',
+      original:
+        'I am going to the shop to repair my umbrella. It is raining heavily outside. I took my umbrella when I went out.',
+      query:
+        'Rewrite the original text, based on what would have happened in this scenario had it not been raining at all instead.',
+      output:
+        'I am going to the shop to repair my umbrella. It is not raining outside at all, so I did not take my umbrella when going out.',
+      gold:
+        'I am going to the shop to repair my umbrella. It is not raining outside at all. I still took my umbrella when I went out, since I needed to get it repaired.',
+      keep: ['I am going to the shop to repair my umbrella. I took my umbrella when I went out.'],
+      change: ['It is raining heavily outside.'],
+      reason:
+        'The repair errand remains unchanged and supplies a reason to bring the umbrella even without rain. ' +
+        'The response changes the weather correctly but treats rain as the only reason for carrying the umbrella, ' +
+        'overlooking the purpose explicitly stated in the story.',
+    },
+    {
+      num: 'ii',
+      tab: 'Rationalized background',
+      title: 'Changing background facts to rationalize the intervention',
+      desc:
+        'A rewrite alters an unaffected event to make a stipulated outcome appear more expected.',
+      check: 'preserve',
+      example: '311v21',
       model: 'Claude-Opus-4.7',
-      original: 'Alonso is bad at backgammon, but he rolled good dice, so he won the game.',
-      query:
-        'Rewrite the original text, based on what would have happened instead had Alonso been good at backgammon and lost the game.',
-      output: 'Alonso is good at backgammon, but he rolled bad dice, so he lost the game.',
-      gold: 'Alonso is good at backgammon, and he rolled good dice, but he lost the game.',
-      keep: ['He rolled good dice.'],
-      change: ['Alonso is bad at backgammon.', 'He won the game.'],
-      reason:
-        'Being good at a game and being lucky are independent variables — Alonso could lose ' +
-        'despite good dice due to unseen factors like a brilliant opponent. The dice roll should not have been edited.',
-    },
-    {
-      key: 'downstream',
-      tab: 'Missing a consequence',
-      title: 'Not editing downstream variables',
-      desc:
-        'The model leaves (or hallucinates over) an event that the intervention should have changed, ' +
-        'breaking the causal chain that follows from the edit.',
-      example: '325v12',
-      model: 'Phi-4',
       original:
-        'Sending a green wedge of citrus skittering across the floor, the bartender bumped the cutting board while mixing a classic Margarita.',
+        'Vera is a highly uncharismatic politician, but a major scandal ruined her opponent’s reputation, so she won the election.',
       query:
-        'Rewrite the original text, based on what would have happened instead had he been mixing a classic Old Fashioned.',
+        'Rewrite the original text, based on what would have happened in this scenario had Vera been a highly charismatic politician and lost the election instead.',
       output:
-        'Sending a splash of ice clinking against the glass, the bartender gently tapped the mixing glass while preparing a classic Old Fashioned. He carefully measured the whiskey, added a dash of bitters, and muddled a sugar cube with a twist of orange peel.',
+        'Vera was a highly charismatic politician, but a major scandal ruined her reputation, so she lost the election.',
       gold:
-        'Sending an orange wedge of citrus skittering across the floor, the bartender bumped the cutting board while mixing a classic Old Fashioned.',
-      keep: ['The bartender bumped the cutting board.'],
-      change: ['Sending a green wedge of citrus skittering across the floor.'],
+        'Vera is a highly charismatic politician, and a major scandal ruined her opponent’s reputation, but she lost the election.',
+      keep: ['A major scandal ruined her opponent’s reputation.'],
+      change: ['Vera is a highly uncharismatic politician. She won the election.'],
       reason:
-        'The downstream garnish should change to an orange wedge (the citrus used in an Old Fashioned) — ' +
-        'instead the model rewrote the whole scene and dropped the invariant fact that the bartender bumped the cutting board.',
+        'The query stipulates both charisma and electoral defeat; it does not ask the model to predict the ' +
+        'election from charisma. The opponent’s scandal is unchanged background in the intended scenario. ' +
+        'Reassigning the scandal to Vera changes that background to rationalize the requested defeat.',
     },
     {
-      key: 'connector',
-      tab: 'Wrong connector',
-      title: 'Wrong connectors',
+      num: 'iii',
+      tab: 'Stale consequence',
+      title: 'Retaining a consequence whose stated reason no longer applies',
       desc:
-        'The model updates the facts but keeps the logical glue (because, so, due to) that no longer holds ' +
-        'once the edit flips a cause-and-effect relationship.',
-      example: '114v4',
-      model: 'Qwen-2.5-7B',
+        'A rewrite incorporates the requested intervention but carries over an explanation tied to the original situation.',
+      check: 'change',
+      example: '309v26',
+      model: 'GPT-5.4-Pro',
       original:
-        'Due to the record-breaking heatwave, the server room temperatures spiked. The website went offline for several hours because the automated cooling systems failed to handle the thermal load.',
+        'It was raining and Timmy had soccer practice. The field was too wet, so practice was canceled.',
       query:
-        'Rewrite the original text, based on what would have happened instead had the server room temperatures not spiked.',
+        'Rewrite the original text, based on what would have happened in this scenario had Timmy had squash practice instead.',
       output:
-        'Due to the record-breaking heatwave, the server room temperatures remained stable thanks to the reliable performance of the automated cooling systems. As a result, the website continued to operate without any interruptions or downtime.',
+        'It was raining and Timmy had squash practice. The court was too wet, so practice was canceled.',
       gold:
-        'Despite the record-breaking heatwave, the server room temperatures did not spike. The website stayed online because the cooling systems were not overtaxed.',
-      keep: ['There was a record-breaking heatwave.'],
-      change: ['The server room temperatures spiked.', 'The website went offline for several hours.'],
+        'It was raining, and the outdoor soccer field was still too wet. Timmy had squash practice instead, and it went ahead on an indoor court.',
+      keep: ['It was raining.'],
+      change: ['The practice venue was too wet, so the practice was canceled.'],
       reason:
-        'When the heat no longer causes a spike, the right connector is "despite" or "nevertheless" — not ' +
-        '"due to". Keeping the causal connector leaves the sentence logically inconsistent.',
+        'Here, “practice venue” refers to the venue used for the activity in the rewritten scenario. Under the ' +
+        'ordinary indoor-squash interpretation, rain making the outdoor soccer field too wet is no longer a reason ' +
+        'to cancel that practice. The response transfers the wet-venue explanation to the squash court. The outdoor ' +
+        'field need not become dry, and the criterion does not rule out every other possible reason for cancellation.',
     },
     {
-      key: 'quantitative',
-      tab: 'Quantitative slip',
-      title: 'Quantitative inconsistency',
+      num: 'iv',
+      tab: 'Quantitative constraint',
+      title: 'Violating physical or quantitative constraints',
       desc:
-        'When an edit changes a quantity, the resulting effects must move in the right direction and ' +
-        'respect physical limits. Models often produce numerically impossible outcomes.',
-      example: '153v1',
-      model: 'Gemini-3.1-Pro',
+        'A rewrite retains an outcome incompatible with the conditions in the counterfactual scenario.',
+      check: 'change',
+      example: '317v3',
+      model: null,
       original:
-        'The crowd cheered wildly as the gymnast nailed the dismount. She held the strenuous iron cross on the rings for 4 seconds and wore a sparkling red leotard.',
+        'The water level in the bathtub is rising rapidly because the main faucet is pouring water in at a rate of 5 gallons per minute.',
       query:
-        'Rewrite the original text, based on what would have happened instead had the gymnast held the strenuous iron cross on the rings for 3 minutes.',
+        'Rewrite the original text, based on what would have happened instead had the drain been opened, leaking water at 8 gallons per minute.',
       output:
-        'What started as standard cheering dissolved into a stunned silence as the gymnast defied the limits of human physiology… When she finally broke the hold and miraculously still managed to nail the dismount, the arena erupted into sheer pandemonium.',
+        'The water level in the bathtub is rising rapidly because the main faucet is pouring water in at a rate of 5 gallons per minute. The drain was opened, leaking water at 8 gallons per minute.',
       gold:
-        'The crowd gasped in horror as the gymnast tore a muscle and collapsed. She held the strenuous iron cross on the rings for 3 minutes and wore a sparkling red leotard.',
-      keep: ['The gymnast wore a sparkling red leotard.'],
-      change: ['The crowd cheered wildly as the gymnast nailed the dismount.'],
+        'The faucet continues to pour water into the bathtub at 5 gallons per minute, while the opened drain removes 8 gallons per minute. The water level falls as the tub loses a net 3 gallons per minute.',
+      keep: ['The main faucet is pouring water in at a rate of 5 gallons per minute.'],
+      change: ['The water level in the bathtub is rising rapidly.'],
       reason:
-        'The world record for an iron cross hold is around 40 seconds, so 3 minutes is physically impossible — ' +
-        'nailing the dismount afterward is not a valid outcome given the limits of the human body.',
+        'The faucet’s inflow remains fixed, and the intervention adds an outflow exceeding it. While water ' +
+        'remains and the stated rates hold, the net volume change is 5 − 8 = −3 gallons per minute, so the water ' +
+        'level falls. The response includes the requested drain opening but incorrectly retains the original rising level.',
     },
     {
-      key: 'latent',
-      tab: 'Latent factor',
-      title: 'Latent factors inconsistency',
+      num: 'v',
+      tab: 'Spatial consequence',
+      title: 'Updating spatial consequences inconsistently',
       desc:
-        'Some background variables are implied but never stated. They must stay fixed unless the intervention ' +
-        'genuinely affects them — models often quietly change them in the wrong direction.',
+        'A rewrite changes an event but fails to keep its consequences consistent with the preserved spatial setting.',
+      check: 'change',
       example: '126v7',
       model: 'Llama-3.1-8B',
       original:
         'Walking east across the Brooklyn Bridge at 8 AM, Sato faced into the morning sun, with the Manhattan skyline at her back.',
       query:
-        'Rewrite the original text, based on what would have happened instead had Sato been walking east across the Brooklyn Bridge at 6 PM instead of 8 AM.',
+        'Rewrite the original text, based on what would have happened in this specific scenario instead had Sato been walking east across the Brooklyn Bridge at 6 PM instead of 8 AM.',
       output:
         'Walking east across the Brooklyn Bridge at 6 PM, Sato faced into the fading light of the setting sun, with the Manhattan skyline at her back.',
       gold:
         'Walking east across the Brooklyn Bridge at 6 PM, Sato had the late-afternoon sun behind her, with the Manhattan skyline at her back.',
       keep: ['Walking east across the Brooklyn Bridge, Sato had the Manhattan skyline at her back.'],
-      change: ['It was 8 AM.', 'The morning sun was in front of Sato.'],
+      change: ['It was 8 AM. The sun was in front of Sato.'],
       reason:
-        'The evening sun is in the west — the opposite of the morning. Facing east at 6 PM, Sato should have ' +
-        'the sun behind her, not in front. The implicit sun position was changed incorrectly.',
+        'Changing the time leaves Sato’s direction of travel and Manhattan’s relative position unchanged. A ' +
+        'visible setting sun would be in the western sky, behind an eastward walker rather than in front. The ' +
+        'illustrative answer shows a daylight realization; the criteria do not require sunlight to remain visible at 6 PM.',
+    },
+    {
+      num: 'vi',
+      tab: 'Unsupported connector',
+      title: 'Using an unsupported causal connector',
+      desc:
+        'A rewrite changes the requested event but retains wording that assigns it an unsupported cause.',
+      check: 'connector',
+      example: '115v3',
+      model: null,
+      original:
+        'The structural engineer observed that the primary support beam had a three-inch fissure across its center. Due to the high risk of immediate collapse, the city council ordered the building to be evacuated immediately.',
+      query:
+        'Rewrite the original text, based on what would have happened instead had the city council decided to keep the building open for business, rather than order an evacuation.',
+      output:
+        'The structural engineer observed that the primary support beam had a three-inch fissure across its center. Due to the high risk of immediate collapse, the city council decided to keep the building open for business, rather than order an evacuation.',
+      gold:
+        'The structural engineer observed that the primary support beam had a three-inch fissure across its center. Despite the high risk of immediate collapse, the city council decided to keep the building open for business, rather than order an evacuation.',
+      keep: ['The support beam had a three-inch fissure. There was a high risk of collapse.'],
+      change: ['The city council ordered the building to be evacuated immediately.'],
+      reason:
+        'The intervention changes the council’s decision, not the observed damage or the stated risk. The response ' +
+        'incorporates that decision but retains “due to,” presenting the danger as the reason to keep the building ' +
+        'open. That connection does not follow from the given scenario. “Despite” expresses the intended contrast; ' +
+        'neutral wording without a causal connector would also be valid. No collapse or injury is required.',
+    },
+    {
+      num: 'vii',
+      tab: 'Historical fact',
+      title: 'Changing historical facts to match a preference',
+      desc:
+        'A rewrite makes an unaffected past event agree with a newly stipulated preference.',
+      check: 'preserve',
+      example: '419v1',
+      model: 'Claude-Opus-4.7',
+      original:
+        'Hari’s favorite color is red. He discovers a childhood photo of his girlfriend wearing a red dress. He had never seen this photo before.',
+      query:
+        'Rewrite the original text, based on what would have happened instead had Hari’s favorite color been blue instead of red.',
+      output:
+        'Hari’s favorite color is blue. He discovers a childhood photo of his girlfriend wearing a blue dress. He had never seen this photo before.',
+      gold:
+        'Hari’s favorite color is blue. He discovers a childhood photo of his girlfriend wearing a red dress. He had never seen this photo before.',
+      keep: ['Hari discovers a previously unseen childhood photo of his girlfriend. She is wearing a red dress in the photo.'],
+      change: ['Hari’s favorite color is red.'],
+      reason:
+        'The requested change concerns Hari’s preference, not the historical contents of the photograph. Changing ' +
+        'the dress to blue makes it match his new preference but alters an unaffected fact. The criteria make no ' +
+        'demand about his emotional reaction to the photo.',
+    },
+    {
+      num: '✓',
+      tab: 'A valid rewrite',
+      title: 'Marked correct despite multiple rewrites',
+      desc:
+        'The judge checks the criteria rather than matching a reference answer, so differently worded responses — ' +
+        'even several alternatives at once — can all pass.',
+      success: true,
+      example: '217v10',
+      model: 'Gemini-3.1-Pro',
+      original:
+        'Using a paper bookmark to keep her place, Lisa reads a thick novel at the terminal. Her connecting flight has been delayed by three hours.',
+      query:
+        'Rewrite the original text, based on what would have happened in this specific scenario instead had Lisa watched a movie on her laptop.',
+      output: [
+        'Using a pair of headphones to block out the noise, Lisa watches a movie on her laptop at the terminal. Her connecting flight has been delayed by three hours.',
+        'Hitting the spacebar to pause her screen whenever announcements chime, Lisa watches a movie on her laptop at the terminal. Her connecting flight has been delayed by three hours.',
+        'Sitting close to a wall outlet to keep her battery charged, Lisa watches a movie on her laptop at the terminal. Her connecting flight has been delayed by three hours.',
+      ],
+      gold:
+        'Lisa watches a movie on her laptop at the terminal. Her connecting flight has been delayed by three hours.',
+      keep: ['Lisa is at the terminal. Her connecting flight has been delayed by three hours.'],
+      change: ['Lisa is reading a thick novel and using a paper bookmark to keep her place in that reading activity.'],
+      reason:
+        'Each alternative replaces the foregrounded reading activity with watching a movie while preserving the ' +
+        'location and flight delay. Headphones, pausing, and charging are optional elaborations, not required ' +
+        'consequences. The change does not require Lisa to discard the bookmark; it may remain in the closed book.',
     },
   ];
 
@@ -141,11 +236,24 @@
     );
   }
 
+  function outputHtml(e) {
+    const who = e.model ? esc(e.model) : 'Illustrative model response';
+    const label = e.success ? '✓ ' + who + ' — marked correct' : '✗ ' + who + ' — invalid edit';
+    const body = Array.isArray(e.output)
+      ? '<ol class="output-list">' + e.output.map((o) => '<li>' + esc(o) + '</li>').join('') + '</ol>'
+      : esc(e.output);
+    return (
+      '<div class="demo-box demo-box--output-static ' + (e.success ? 'is-right' : 'is-wrong') + '">' +
+      '<div class="demo-label">' + label + '</div>' + body + '</div>'
+    );
+  }
+
   function renderTabs() {
     tabsRoot.innerHTML = ERRORS.map(
       (e, i) =>
         '<button type="button" class="error-tab' + (i === active ? ' is-active' : '') +
-        '" data-i="' + i + '"><span class="etab-num">' + (i + 1) + '</span>' + esc(e.tab) + '</button>'
+        (e.success ? ' is-success' : '') +
+        '" data-i="' + i + '"><span class="etab-num">' + esc(e.num) + '</span>' + esc(e.tab) + '</button>'
     ).join('');
     tabsRoot.querySelectorAll('.error-tab').forEach((btn) => {
       btn.addEventListener('click', () => {
@@ -158,19 +266,24 @@
 
   function renderCard() {
     const e = ERRORS[active];
+    const heading = e.success ? 'Valid: ' + esc(e.title) : '(' + esc(e.num) + ') ' + esc(e.title);
+    const checkPill = e.check
+      ? '<span class="check-pill">Fails check: ' + esc(CHECKS[e.check]) + '</span>'
+      : '<span class="check-pill is-pass">Passes all three checks</span>';
     cardRoot.innerHTML =
       '<div class="error-card-head">' +
-      '<h3>Error ' + (active + 1) + ': ' + esc(e.title) + '</h3>' +
-      '<p>' + esc(e.desc) + '</p></div>' +
+      '<h3>' + heading + '</h3>' +
+      '<p>' + esc(e.desc) + '</p>' + checkPill + '</div>' +
       '<div class="error-card-body">' +
-      '<div class="demo-box demo-box--scenario"><div class="demo-label">📄 Scenario <span style="font-weight:600;color:#94a3b8;margin-left:auto">#' + esc(e.example) + '</span></div>' + esc(e.original) + '</div>' +
-      '<div class="demo-box demo-box--query"><div class="demo-label">✏️ Counterfactual edit request</div>' + esc(e.query) + '</div>' +
-      '<div class="demo-box demo-box--output-static is-wrong"><div class="demo-label">✗ ' + esc(e.model) + ' — invalid edit</div>' + esc(e.output) + '</div>' +
-      '<div class="demo-box demo-box--gold"><div class="demo-label">✅ Representative valid edit</div>' + esc(e.gold) + '</div>' +
+      '<div class="demo-box demo-box--scenario"><div class="demo-label">📄 Story <span style="font-weight:600;color:#94a3b8;margin-left:auto;text-transform:none">#' + esc(e.example) + '</span></div>' + esc(e.original) + '</div>' +
+      '<div class="demo-box demo-box--query"><div class="demo-label">✏️ Query</div>' + esc(e.query) + '</div>' +
+      outputHtml(e) +
+      '<div class="demo-box demo-box--gold"><div class="demo-label">✅ Illustrative answer (not scored)</div>' + esc(e.gold) + '</div>' +
       '<div class="demo-box demo-box--criteria"><div class="demo-label">📐 Evaluation criteria</div>' +
       criteriaHtml('Should NOT change:', 'keep', e.keep) +
       criteriaHtml('Should change:', 'change', e.change) + '</div>' +
-      '<div class="demo-box demo-box--reason"><div class="demo-label">⚖️ Why it fails</div>' + esc(e.reason) + '</div>' +
+      '<div class="demo-box demo-box--reason"><div class="demo-label">⚖️ Authors’ reasoning</div>' +
+      esc(e.reason) + '</div>' +
       '</div>';
   }
 

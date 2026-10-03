@@ -1,12 +1,17 @@
 /**
  * "Try It Yourself" — lets anyone run a real CoBe scenario through their own
  * model: copy the prompt, paste the model's answer, then reveal the
- * evaluation criteria, a representative answer, and how benchmarked models did.
+ * evaluation criteria and an illustrative answer.
  */
 (function () {
   'use strict';
 
   const EXAMPLES_URL = './eval-results/category-examples.json';
+
+  // Per-model verdict chips come from an earlier (June 2026) evaluation run that
+  // predates the current paper's judge and numbers, so they are hidden for now.
+  // Set to true to show them again.
+  const SHOW_MODEL_VERDICTS = false;
 
   const MODEL_LABELS = {
     gpt: 'GPT-5.4-Pro',
@@ -49,15 +54,10 @@
     return d.innerHTML;
   }
 
+  // CoBe prompts are conversational: the story followed by the edit request,
+  // with no causal terminology or step-by-step instructions (paper Sec. 1).
   function promptText(ex) {
-    return (
-      'You are given a short scenario. Perform a counterfactual edit: rewrite ' +
-      'the text so it reflects the hypothetical change, updating everything ' +
-      'that is causally downstream of the change while leaving everything else ' +
-      'untouched.\n\n' +
-      'SCENARIO:\n' + ex.original + '\n\n' +
-      'INSTRUCTION:\n' + ex.query
-    );
+    return ex.original + '\n\n' + ex.query;
   }
 
   function setDomain(domain) {
@@ -74,7 +74,9 @@
     el.query.textContent = ex.query;
     el.counter.textContent = idx + 1 + ' / ' + list.length;
     el.answer.hidden = true;
-    el.reveal.innerHTML = '<span class="icon">🔍</span> Reveal evaluation criteria &amp; how models did';
+    el.reveal.innerHTML = SHOW_MODEL_VERDICTS
+      ? '<span class="icon">🔍</span> Reveal evaluation criteria &amp; how models did'
+      : '<span class="icon">🔍</span> Reveal evaluation criteria';
     el.copy.classList.remove('is-done');
     el.copy.innerHTML = '<span class="icon">📋</span> Copy prompt';
   }
@@ -94,6 +96,7 @@
   }
 
   function verdictsHtml(ex) {
+    if (!SHOW_MODEL_VERDICTS) return '';
     const outputs = ex.model_outputs || {};
     const ids = MODEL_ORDER.filter((id) => outputs[id]);
     if (!ids.length) return '';
@@ -117,11 +120,11 @@
   function reveal() {
     const ex = list[idx];
     el.answer.innerHTML =
-      '<div class="demo-box demo-box--gold"><div class="demo-label">✅ Representative valid edit</div>' +
+      '<div class="demo-box demo-box--gold"><div class="demo-label">✅ Illustrative answer (not scored)</div>' +
       esc(ex.gold_answer) + '</div>' +
       '<div class="demo-box demo-box--criteria"><div class="demo-label">📐 Evaluation criteria</div>' +
-      criteriaHtml('Should NOT change (not downstream of the edit):', 'keep', ex.should_not_change) +
-      criteriaHtml('Should change (causally downstream):', 'change', ex.should_change) +
+      criteriaHtml('Should NOT change:', 'keep', ex.should_not_change) +
+      criteriaHtml('Should change:', 'change', ex.should_change) +
       '</div>' +
       verdictsHtml(ex);
     el.answer.hidden = false;

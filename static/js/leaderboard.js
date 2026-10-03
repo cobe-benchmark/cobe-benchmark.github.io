@@ -1,18 +1,19 @@
 /**
  * CoBe leaderboard — renders a sortable, filterable table from
- * eval-results/eval-statistics.json (overall accuracy per model).
+ * eval-results/paper-results.json (Table 5: accuracy averaged across the three
+ * query phrasings, ± std across phrasings).
  */
 (function () {
   'use strict';
 
-  const STATS_URL = './eval-results/eval-statistics.json';
+  const STATS_URL = './eval-results/paper-results.json';
 
-  // Display metadata for each model id used in eval-statistics.json.
+  // Display metadata for each model id used in paper-results.json.
   const MODEL_META = {
     gpt:          { label: 'GPT-5.4-Pro',     org: 'OpenAI',          type: 'proprietary', params: '—' },
     gemini:       { label: 'Gemini-3.1-Pro',  org: 'Google DeepMind', type: 'proprietary', params: '—' },
     claude:       { label: 'Claude-Opus-4.7', org: 'Anthropic',       type: 'proprietary', params: '—' },
-    'gemma-27b':  { label: 'Gemma-2-27B',     org: 'Google',          type: 'open',        params: '27B' },
+    'gemma-27b':  { label: 'Gemma-2-27B',     org: 'Google DeepMind', type: 'open',        params: '27B' },
     'llama3-70b': { label: 'Llama-3.1-70B',   org: 'Meta',            type: 'open',        params: '70B' },
     phi4:         { label: 'Phi-4',           org: 'Microsoft',       type: 'open',        params: '14B' },
     'qwen-7b':    { label: 'Qwen-2.5-7B',     org: 'Alibaba',         type: 'open',        params: '7B' },
@@ -29,9 +30,8 @@
   let filter = 'all';
   let sortKey = 'accuracy';
   let sortDir = 'desc';
-  let maxAcc = 100;
 
-  function pct(v) { return (v * 100).toFixed(1); }
+  function pct(v) { return v.toFixed(2); }
 
   function applySortFilter() {
     let view = rows.slice();
@@ -39,7 +39,7 @@
     view.sort((a, b) => {
       let cmp;
       if (sortKey === 'model') cmp = a.label.localeCompare(b.label);
-      else if (sortKey === 'org') cmp = a.org.localeCompare(b.org);
+      else if (sortKey === 'type') cmp = a.type.localeCompare(b.type);
       else cmp = a[sortKey] - b[sortKey];
       return sortDir === 'asc' ? cmp : -cmp;
     });
@@ -50,7 +50,8 @@
     const view = applySortFilter();
     tableBody.innerHTML = view
       .map((r, i) => {
-        const widthPct = Math.max(2, (r.accuracy * 100 / maxAcc) * 100);
+        // Bars use an absolute 0–100% scale so a full bar would mean a solved benchmark.
+        const widthPct = Math.max(2, r.accuracy);
         const rankClass = sortKey === 'accuracy' && sortDir === 'desc' && i === 0 ? ' top1' : '';
         const medal = sortKey === 'accuracy' && sortDir === 'desc' && i === 0 ? '🥇' : i + 1;
         return (
@@ -63,7 +64,8 @@
           '<td class="hide-sm">' + r.params + '</td>' +
           '<td class="lb-acc-cell"><div class="lb-acc-bar">' +
           '<div class="lb-acc-fill" style="width:' + widthPct + '%"></div></div></td>' +
-          '<td><span class="lb-acc-val">' + pct(r.accuracy) + '%</span></td>' +
+          '<td><span class="lb-acc-val">' + pct(r.accuracy) + '%</span>' +
+          '<span class="lb-acc-std">±' + pct(r.std) + '</span></td>' +
           '</tr>'
         );
       })
@@ -85,7 +87,7 @@
           sortDir = sortDir === 'asc' ? 'desc' : 'asc';
         } else {
           sortKey = key;
-          sortDir = key === 'model' || key === 'org' ? 'asc' : 'desc';
+          sortDir = key === 'model' || key === 'type' ? 'asc' : 'desc';
         }
         render();
       });
@@ -117,12 +119,9 @@
         .map(([id, v]) => ({
           id,
           accuracy: v.accuracy,
-          correct: v.correct,
-          wrong: v.wrong,
-          unknown: v.unknown,
+          std: v.std,
           ...MODEL_META[id],
         }));
-      maxAcc = Math.max(...rows.map((r) => r.accuracy * 100));
       if (statusEl) statusEl.hidden = true;
       render();
     } catch (err) {

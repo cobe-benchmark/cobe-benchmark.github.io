@@ -7,7 +7,7 @@
 
   const SHARE_URL = 'https://cobe-benchmark.github.io';
   const SHARE_TEXT =
-    'CoBe: a new benchmark for counterfactual text editing. Frontier LLMs score only ~54%. Can your model do better?';
+    'CoBe: a new benchmark for conversational counterfactual text editing. Frontier LLMs average only 58%. Can your model do better?';
 
   function ready(fn) {
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
