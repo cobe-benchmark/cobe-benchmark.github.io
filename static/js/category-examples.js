@@ -4,7 +4,7 @@
 (function (global) {
   'use strict';
 
-  const EXAMPLES_URL = './eval-results/category-examples.json';
+  const EXAMPLES_URL = './eval-results/category-examples.json?v=20261008';
 
   let examplesData = null;
   let panelEl = null;

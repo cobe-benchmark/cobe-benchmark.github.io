@@ -6,7 +6,7 @@
 (function () {
   'use strict';
 
-  const EXAMPLES_URL = './eval-results/category-examples.json';
+  const EXAMPLES_URL = './eval-results/category-examples.json?v=20261008';
 
   // Per-model verdict chips come from an earlier (June 2026) evaluation run that
   // predates the current paper's judge and numbers, so they are hidden for now.
